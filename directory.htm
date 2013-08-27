@@ -1,0 +1,67 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li class="active">{% T People at {0} || data.Business.Name %}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">
+      <h2 class="page-title span12">{% T People at {0} || data.Business.Name %}</h2>
+      
+      <!-- CONTENT -->
+      <section id="content" class="span12">
+        <!-- FILTER -->
+        <div class="filter well well-large">
+          {% if data.Local.Tag %}
+          <a href="{% Url Directory, Index %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {% T View all %}</a>
+          {% endif %}
+          {% for tag in data.Local.AllTags %}
+          <a href="{% Url Directory, Index, tag: tag %}" class="btn btn-{% if data.Local.Tag == tag  %}orange{% else %}grey{%endif%}"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {{ tag }}</a>
+          {% endfor %}
+        </div>
+        <!-- END FILTER -->
+        
+        <div class="row">
+          {% for member in data.Local.Coworkers %}
+          <!-- member -->
+          <div class="member_block span3 text-center">
+            <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="user_avatar">
+              {% if member.HasAvatar %}
+              <img class="img-circle" height="140" width="140" src="{% Url Coworker, GetAvatar, id: member.Id, h:140, w:140 %}" alt="{{ member.FullName | Capitalize }}" >          
+              {% else %}
+              <img class="img-circle" height="140" width="140" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ member.FullName | Capitalize }}" >
+              {% endif %}
+            </a>
+            <h4 class="subheader">{{ member.FullName | Capitalize }}</h4>
+            {% if member.ProfileWebsite.size > 0 %}
+            <a target="_blank" href="http://{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
+            {% endif %}
+            {% if member.Twitter.size > 0 %}
+            <a target="_blank" href="http://twitter.com/{{ member.Twitter }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-twitter"></span></a>
+            {% endif %}
+            {% if member.Linkedin.size > 0 %}
+            <a target="_blank" href="{{ member.Linkedin }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-linkedin"></span></a>
+            {% endif %}
+            {% if member.Facebook.size > 0 %}
+            <a target="_blank" href="https://www.facebook.com/{{ member.Facebook }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-facebook"></span></a>
+            {% endif %}
+            {% if member.Skype.size > 0 %}
+            <a href="callto://{{ member.Skype }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-skype"></span></a>
+            {% endif %}
+          </div>
+          <!-- END member -->
+          {% endfor %}
+        </div>
+        
+      </section>
+      <!-- END CONTENT -->
+      
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+</div>
+{% endblock %}

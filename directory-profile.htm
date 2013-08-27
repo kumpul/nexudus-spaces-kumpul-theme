@@ -1,0 +1,106 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li><a href="{% Url Directory, Index %}">{% T People at {0} || data.Business.Name %}</a> <span class="divider">/</span></li>
+      <li class="active">{% T People at {0} || data.Business.Name %}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">
+      
+      <h2 class="page-title span12">
+        {{ data.Local.Coworker.FullName }}
+      	{% if data.Local.Coworker.NickName != null %}
+        [{{data.Local.Coworker.NickName}}]
+        {% endif %}
+      </h2>
+      
+      <!-- CONTENT -->
+      <section id="content" class="span9">
+        <div class="body-content">
+          <div class="media">
+            <div class="media-object pull-left">
+              <img class="img-circle"  src="{% Url Coworker, GetAvatar, Id: data.Local.Coworker.Id, h:140, w:140 %}" />
+            </div>
+            <div class="media-body">
+              <h3>{% T My profile %}</h3>
+              <p>
+                {% if data.Local.Coworker.ProfileSummary == null %}
+                {% T {0} hasn't published yet a profile summary. || data.Local.Coworker.FullName %}
+                {% endif %}
+                {{ data.Local.Coworker.ProfileSummary | StripHtml | MarkDown  }}
+              </p>
+              <div class="skills">
+                <h3>{% T My skills %}</h3>
+                {% if data.Local.Coworker.ProfileTagsList.size == 0 %}
+                {% T {0} hasn't published any skills yet. || data.Local.Coworker.FullName %}
+                {% endif %}
+                {% for tag in data.Local.Coworker.ProfileTagsList %}
+                <a href="{% Url Directory, Index, tag: tag %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {{ tag }}</a>
+                {% endfor %}
+              </div>
+              {% if data.Local.Coworker.HasContactDetails %}
+              <div class="skills">
+                <h3>{% T Contact details %}</h3>
+                {% if data.Local.Coworker.ProfileWebsite.size > 0 %}
+                <a target="_blank" href="http://{{ data.Local.Coworker.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
+                {% endif %}
+                {% if data.Local.Coworker.Twitter.size > 0 %}
+                <a target="_blank" href="http://twitter.com/{{ data.Local.Coworker.Twitter }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-twitter"></span></a>
+                {% endif %}
+                {% if data.Local.Coworker.Linkedin.size > 0 %}
+                <a target="_blank" href="{{ data.Local.Coworker.Linkedin }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-linkedin"></span></a>
+                {% endif %}
+                {% if data.Local.Coworker.Facebook.size > 0 %}
+                <a target="_blank" href="https://www.facebook.com/{{ data.Local.Coworker.Facebook }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-facebook"></span></a>
+                {% endif %}
+                {% if data.Local.Coworker.Skype.size > 0 %}
+                <a href="callto://{{ data.Local.Coworker.Skype }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-skype"></span></a>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END CONTENT -->
+      
+      <!-- SIDEBAR -->
+      <aside id="sidebar-right" class="span3">
+        
+        <!-- WIDGET SKILLS -->
+        <div class="widget widget-skills">
+          <div class="widget-title">
+            <h3>{% T Skills at {0} || data.Business.Name %}</h3>
+          </div>
+          <div class="widget-body">
+            {% for tag in data.Local.AllTags %}
+            <a href="{% Url Directory, Index, tag: tag %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {{ tag | Capitalize }}</a>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- END WIDGET SKILLS -->
+        <!-- WIDGET FLICKR -->
+        <div class="widget widget-flickr">
+          <div class="widget-title">
+            <h3>{% T Flickr Feed %}</h3>
+          </div>
+          <div class="widget-body">
+            <ul>
+            </ul>
+          </div>
+        </div>
+        <!-- END WIDGET FLICKR -->
+        
+      </aside>
+      <!-- END SIDEBAR -->
+      
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+</div>
+{% endblock %}

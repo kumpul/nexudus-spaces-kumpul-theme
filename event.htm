@@ -1,0 +1,136 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li><a href="{% Url Bookings, Index %}">{% T Events and bookings %}</a> <span class="divider">/</span></li>
+      <li class="active">{{ data.Local.Event.Name }}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">
+      
+      <!-- CONTENT -->
+      <section id="content" class="span9">
+        <article class="post">
+          <h2 class="page-title"><a href="{% Url events, view, id: data.Local.Event.Id, title: data.Local.Event.Name | Clean %}">{{ data.Local.Event.Name }}</a></h2>
+          <ul class="post-info">
+            <li>
+              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="#">{{ data.Local.Event.StartDate | Date: 'D' }}</a>
+            </li>
+            <li>
+              <span aria-hidden="true" class="icon i-16 icon-bubble"></span> <a href="#comments">{% T {0} Comment(s) || data.Local.Event.Comments.size %}</a>
+            </li>
+          </ul>
+          <div class="body-content">
+            {% if data.Local.Event.HasLargeImage %}
+            <p>
+              <img src="{% Url Events, GetLargeImage, id: data.Local.Event.Id, w: 870 %}" alt="{{ data.Local.Event.Name | StripHtml }}" />
+            </p>
+            {% endif %}
+            {% if data.Local.Event.HasSmallImage %}
+            <a href="#" class="thumbnail pull-left">
+              <img src="{% Url Events, GetSmallImage, id: data.Local.Event.Id, w: 200 %}">
+            </a>
+            {% endif %}
+            <p>
+              {{ data.Local.Event.LongDescription }}
+            </p>
+            
+            <p>
+              {% if data.Local.Event.WebAddress != null %}
+              <a href="{{data.Local.Event.WebAddress}}" class="btn btn-grey">
+                <i class="icon-earth"></i> 
+                {% T Website %}</a>
+              {% endif %}
+              {% if data.Local.Event.FacebookPage != null %}
+              <a href="{{data.Local.Event.FacebookPage}}" class="btn btn-grey">
+                <i class="icon-facebook"></i> 
+                {% T Facebook Page %}</a>
+              {% endif %}
+              {% if data.Local.Event.TicketsPage != null %}
+              <a href="{{data.Local.Event.TicketsPage}}" class="btn btn-grey">
+                <i class="icon-ticket"></i>
+                {% T Buy Tickets %}</a>
+              {% endif %}
+            </p>
+          </div>
+        </article>
+        
+        <h3 id="comments">{% T Comments %}</h3>
+        {% for comment in data.Local.Event.Comments %}
+        <!-- COMMENT -->
+        <div class="media comment">
+          <a class="media-object pull-left" href="{% Url Directory, Profile, id: comment.PostedBy.Coworker.Id, name: comment.PostedBy.Coworker.FullName | Clean %}">
+            {% if comment.PostedBy.Coworker.HasAvatar %}
+            <img class="img-circle" height="64" width="64" src="{% Url Coworker, GetAvatar, id: comment.PostedBy.Coworker.Id, h:64, w:64 %}" alt="{{ comment.PostedBy.Coworker.FullName | Capitalize }}" >          
+            {% else %}
+            <img class="img-circle" height="64" width="64" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ comment.PostedBy.Coworker.FullName | Capitalize }}" >
+            {% endif %}
+          </a>
+          <div class="media-body">
+            <h4 class="media-heading">{{ comment.PostedBy.Coworker.FullName | Capitalize }} </h4>
+            <blockquote>
+              <p>{{ comment.Text | StripHtml }}</p>
+              <small>{{ comment.CreatedOn | Date: 'd MMMM @htt' }}</small>
+            </blockquote>
+          </div>
+        </div>
+        <!-- END COMMENT -->
+        {% endfor %}
+        <!-- NEW COMMENT -->
+        {% if data.Local.Event.AllowComments %}
+        {% if data.Coworker != null %}
+        <div class="media comment comment-form">
+          
+          <a class="media-object pull-left" href="{% Url Directory, Profile, id: data.Coworker.Id %}">
+            {% if data.Coworker.HasAvatar %}
+            <img class="img-circle" height="64" width="64" src="{% Url Coworker, GetAvatar, id: data.Coworker.Id, h:64, w:64 %}" alt="{{ data.Coworker.FullName | Capitalize }}" >
+            {% else %}
+            <img class="img-circle" height="64" width="64" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ data.Coworker.FullName | Capitalize }}" >
+            {% endif %}
+          </a>
+          <div class="media-body">
+            <form class="row-fluid" method="post" action="{% Url Events, NewComment %}">
+              {% AntiforgeryToken %}
+          	  <input type="hidden" id="title" name="title" required="required" value="{{ data.Local.Event.Name }}"> 
+              <label for="message_messagetext">{% T Comment %}</label>
+              <textarea type="text" class="span12" maxlength="2000" name="comment" id="comment" required="required">{{data.Local.Comment.Text}}</textarea>
+              <button type="submit" class="btn btn-orange pull-right">{% T Post message %}</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="media comment comment-form">
+          <a href="{% Url Login, Index %}?returnUrl={% Url events, view, id: data.Local.Event.Id, title: data.Local.Event.Name | Clean %}" class="btn btn-orange">{% T Login to leave a message %}</a>
+        </div>
+        
+        {% endif %}
+        {% endif %}
+        <!-- END NEW COMMENT -->
+      </section>
+      <!-- END CONTENT -->
+      
+      <!-- SIDEBAR -->
+      <aside id="sidebar-right" class="span3">
+        <!-- WIDGET FLICKR -->
+        <div class="widget widget-flickr">
+          <div class="widget-title">
+            <h3>{% T Flickr Feed %}</h3>
+          </div>
+          <div class="widget-body">
+            <ul>
+            </ul>
+          </div>
+        </div>
+        <!-- END WIDGET FLICKR -->
+      </aside>
+      <!-- END SIDEBAR -->
+      
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+</div>
+{% endblock %}

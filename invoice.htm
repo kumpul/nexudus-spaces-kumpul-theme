@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <title>Invoice. {{ data.Local.Invoice.InvoiceNumber }}</title>
+    
+    <link href="/Content/themes/admin/css/Invoice.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="block-content">
+      <div class="float-right" style="margin-top:-43px">
+        <button type="button"><img src="/Content/themes/admin/images/icons/fugue/printer.png" width="16" height="16"> Print</button>
+      </div>
+      
+      <div id="invoice" class="pagestyle">
+        <div id="invoice-header">
+          {% if data.Local.Invoice.Business.HasLogo %}
+          <img width="250" class="logo" src="{% Url Business, GetLogo, w: 250 %}">
+          {% else %}
+          <div class="title" class="logo" style="font-size: 4em; color: Black; font-family: Open Sans, sans-serif;">{{ data.Local.Invoice.Business.Name }}</div>
+          {% endif %}
+          <div class="vcard" id="company-address">
+            <div class="fn org">
+              <strong>{{ data.Local.Invoice.Business.Name }}</strong>
+            </div>
+            <div class="adr">
+              <div class="street-address">
+                {{ data.Local.TaxIDCode }}
+              </div>
+              <div class="street-address">
+                {{ data.Local.BillToAddress | NewlineToBr }}
+              </div>
+              <div class="locality">
+                {{ data.Local.BillToCity }}
+              </div>
+              <div id="company-postcode">
+                <span class="postal-code">{{ data.Local.BillToPostCode }}</span>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div id="invoice-info">
+        <h2>
+          Invoice
+          <strong>{{ data.Local.Invoice.InvoiceNumber }}</strong></h2>
+        <h3>
+          {{ data.Local.Invoice.CreatedOn | Date: 'D' }}</h3>
+        <p id="invoice-total">
+          {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}</p>
+        <p id="payment-due">
+          {% if data.Local.Invoice.Paid == false %}
+          Due:
+          {{ data.Local.Invoice.DueDate | Date: 'D' }}
+          {% else %}
+          Paid
+          {{ data.Local.Invoice.PaidOn | Date: 'D' }}
+          {% endif %}
+        </p>
+      </div>
+      <div class="vcard" id="client-details">
+        <div class="org">
+          {{ data.Local.Invoice.BillToName }}
+        </div>
+        <div class="adr">
+          <div class="street-address">
+            {{ data.Local.Invoice.TaxIDNumber }}
+          </div>
+          <div class="street-address">
+            {{ data.Local.Invoice.BillToAddres | NewLineToBr }}
+          </div>
+          <div class="locality">
+            {{ data.Local.Invoice.BillToCity }}
+          </div>
+          <div id="client-postcode">
+            <span class="postal-code">{{ data.Local.Invoice.BillToPostCode }}</span>
+          </div>
+        </div>
+      </div>
+      <table id="invoice-amount">
+        <thead>
+          <tr id="header_row">
+            <th class="quantity_th">
+              Quantity
+            </th>
+            <th class="details_notax_th">
+              Details
+            </th>
+            <th class="unitprice_th">
+              Unit Price
+            </th>
+            <th class="subtotal_th">
+              Subtotal
+            </th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr id="">
+            <td colspan="2">
+              &nbsp;
+            </td>
+            <td colspan="1" class="total" id="total_currency">
+              Tax
+              (<span class="currency">{{ data.Local.Invoice.Currency.Code }}</span>)
+            </td>
+            <td class="total" id="total_amount">
+              {{ data.Local.Invoice.TaxAmount | FormatDecimal: '0.00' }}
+            </td>
+          </tr>
+          <tr id="total_tr">
+            <td colspan="2">
+              &nbsp;
+            </td>
+            <td colspan="1" class="total" id="Td1">
+              {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
+              (<span class="currency">{{ data.Local.Invoice.Currency.Code }}</span>)
+            </td>
+            <td class="total" id="Td2">
+              {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
+            </td>
+          </tr>
+          {% if data.Local.Invoice.Paid  %}
+          <tr id="settlement_tr">
+            <td colspan="3" class="item_r">
+              Paid On
+              {{ data.Local.Invoice.PaidOn | Date: 'D' }}
+            </td>
+            <td class="item_r">
+              {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
+            </td>
+          </tr>
+          {% else %}
+          <tr id="due_tr">
+            <td colspan="3" class="total">
+              Due
+              (<span class="currency">{{ data.Local.Invoice.Currency.Code  }}</span>)
+            </td>
+            <td class="total">
+              {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
+            </td>
+          </tr>
+          {% endif %}
+        </tfoot>
+        <tbody id="invoice_items">
+          {% for line in data.Local.Invoice.Lines %}
+          <tr data-model="invoice_item" class="item odd" id="invoice_item_{{ data.Local.Invoice.Id }}">
+            <td class="item_l quantity_td">
+              {{ line.Quantity }}
+            </td>
+            <td class="item_l description_td">
+              {{ line.Description }}
+            </td>
+            <td class="item_r price_td">
+              {{ line.UnitPrice | FormatDecimal: '0.00' }}
+            </td>
+            <td class="item_r subtotal_td">
+              {{ line.SubTotal | FormatDecimal: '0.00' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div id="payment-details">
+        <h2>
+          Payment Details</h2>
+        <div id="bank_name">
+          {{ data.Local.BankName }}
+          
+        </div>
+        <div id="bank-code">
+          <strong>Bank Code</strong> 
+          {{ data.Local.BankCode }} </div>
+        
+        <div id="sort-code">
+          <strong>Sort code</strong> 
+          {{ data.Local.SortCode }} </div>
+        
+        <div id="account-number">
+          <strong>Account Number:</strong> 
+          {{ data.Local.AccountNumber }} </div>
+        <div id="payment-reference">
+          <strong>Payment reference:</strong> {{ data.Local.Invoice.InvoiceNumber }}</div>
+      </div>
+          </div>
+          <div class="clear"></div>
+          
+      </div>
+      
+      
+  </body>
+</html>

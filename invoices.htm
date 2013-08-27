@@ -1,0 +1,116 @@
+{% extends master.master %}
+
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li><a href="{% Url Profile, Index %}">{% T My account %}</a> <span class="divider">/</span></li>
+      <li class="active">{% T Payments and Invoices %}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">
+      
+      <h2 class="page-title span12">{% T Payments and Invoices %}</h2>
+      
+      <!-- CONTENT -->
+      <section id="content" class="span12">
+        
+        <div class="alert alert-info text-center">
+          {% if data.Coworker.Tariff != null %}
+          <h4>{% T Your are in the "{0}" price plan. || data.Coworker.Tariff.Name %}</h4>
+          {% assign renewDateFormated =  data.Coworker.NextInvoice | Date: 'D' %}
+          {% T Your price plan is due for renewal on {0}. || renewDateFormated %}
+          {% else %}
+          <h4>{% T You are not in a price plan. %}</h4>
+          {% endif %}
+        </div>
+        
+        <h3>{% T Pending payments %}</h3>
+        {% if  data.Local.UnPaidInvoices.size == 0 %}
+        <div class="alert alert-success">
+          {% T You don't have any pending payments %}
+        </div>
+        {% endif %}
+        
+        <table class="table table-hover invoices">
+          <tbody>
+            {% for invoice in data.Local.UnPaidInvoices %}
+            <tr>
+              <td><span aria-hidden="true" class="icon i-16 icon-warning"></span></td>
+              <td>{% T Invoice %} #{{invoice.InvoiceNumber}} - {{invoice.CreatedOn | Date: 'D'}} - <strong>{{ invoice.TotalAmount | FormatDecimal format: '0.00' }} {{ data.Business.Currency.Code }}</strong></td>
+              <td>
+                <div class=" pull-right">
+                  {% if data.Local.PayPalEnabled %}
+                  <a class="btn btn-orange" href="{% Url Invoices, Pay, Id: invoice.Id, provider: 'PayPal' %}"><span aria-hidden="true" class="icon i-16 icon-paypal"></span> {% T Pay by PayPal %}</a>
+                  {% endif %}
+                  {% if data.Local.StripeEnabled %}
+                  <a class="btn btn-orange stripePayButton" data-description="Invoice #{{invoice.InvoiceNumber}}" data-amount="{{ invoice.TotalAmount | Times: 100 }}" data-payUrl="{% Url Invoices, Pay, Id: invoice.Id, provider: 'Stripe' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <h3>{% T Completed payments %}</h3>
+        <table class="table table-hover invoices">
+          {% if data.Local.PaidInvoices.size == 0 %}
+          <div class="alert alert-info">
+            {% T You don't have any completed payments %}
+          </div>
+          {% endif %}
+          <tbody>
+            {% for invoice in data.Local.PaidInvoices %}
+            <tr>
+              <td><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
+              <td>{% T Invoice %} #{{invoice.InvoiceNumber}} - {{invoice.CreatedOn | Date: 'D'}} - <strong>{{ invoice.TotalAmount | FormatDecimal format: '0.00' }} {{ data.Business.Currency.Code }}</strong></td>
+              <td>
+                <a href="{% Url Invoices, Print, guid: invoice.UniqueId %}" class="btn btn-orange pull-right"><span aria-hidden="true" class="icon i-16 icon-file-3"></span> {% T Download invoice %}</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      <!-- END CONTENT -->
+      
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+  
+  
+</div>
+{% endblock %}
+
+{% block script %}
+{% if data.Local.StripeEnabled %}
+<script src="https://checkout.stripe.com/v2/checkout.js"></script>
+<script>
+    $('.stripePayButton').click(function () {
+        var el = $(this);
+        var token = function (res) {
+            var $input = $('<input type=hidden name=stripeToken />').val(res.id);
+            var payUrl = el.attr('data-payUrl');
+            window.location.href = payUrl + '&token=' + res.id + '&rnd=' + Math.floor((Math.random() * 100000) + 1);;
+        };
+
+        StripeCheckout.open({
+            key: '{{ data.Local.StripePublicKey }}',
+            address: true,
+            amount: el.attr('data-amount'),
+            currency: '{{ data.Business.Currency.Code }}',
+            name: '{{ data.Business.Name }}',
+            description: el.attr('data-description'),
+            panelLabel: 'Checkout',
+            token: token
+        });
+
+        return false;
+    });
+</script>
+{% endif %}
+{% endblock %}

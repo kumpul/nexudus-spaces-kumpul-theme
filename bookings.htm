@@ -1,0 +1,242 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li class="active">{% T Events and bookings %}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">      
+      <h2 class="page-title span12">
+        {% T Events and bookings calendar %}
+        <select id="resource-filter" class="pull-right hidden-phone" style="margin-top: 5px">
+          <option value="">{% T Show all resources %}</option>
+          {% for resource in data.Resources %}
+          <option {%if data.Local.Resource.Id == resource.Id %}selected="selected"{%endif%} value="{{ resource.Id }}">{{ resource.Name }}</option>
+          {% endfor %}
+        </select>
+      </h2>
+
+      <!-- CONTENT -->
+      <section id="content" class="span12">
+        {% if data.Coworker != null %}
+        <div class="alert alert-info fade in">
+          <ul style="margin-bottom:0">
+            <li>{% T Click in the calendar to request a booking. %}</li>
+            <li>{% T Times are displayed in the following timezone: {0}. || data.Coworker.SimpleTimeZone.Name %}</li>
+          </ul>
+        </div>
+        {% else %}
+        <p>
+        <a class="btn btn-orange" href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Bookings, Index %}">{% T Login to make a booking %}</a>
+        </p>
+        {% endif %}
+        <div id="calendar" class="well"></div>
+        <div>
+          <span>{% T Legend %}:</span>
+          <span class="label" style="background: black">{% T Your bookings %}</span>
+          <span class="label" style="background: #a1a1a1">{% T Events %}</span>
+          <span class="label" style="background: lightgray">{% T Booked Resource %}</span>
+          {% if data.Coworker != null %}
+          <a onclick="createBooking()" class="btn btn-orange pull-right">{% T Make a booking %}</a>
+          {% else %}
+          <a class="btn btn-orange pull-right" href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Bookings, Index %}">{% T Login to make a booking %}</a>
+          {% endif %}
+        </div>
+        
+      </section>
+      <!-- END CONTENT -->
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+  
+  {% include booking.htm %}
+</div>
+{% endblock %}
+{% block script %}
+
+<script>
+    
+
+  
+    var fc = $('#calendar').fullCalendar({
+        allDayText: '{% T All day %}',
+        axisFormat: '{% T AxisFormat %}',
+        titleFormat: {
+            month: '{% T MonthFormat %}',
+            week: "{% T WeekFormat %}",
+            day: '{% T DayFormat %}'
+        },
+        columnFormat: {
+            month: '{% T MontShort %}',
+            week: "{% T WeekShort %}",
+            day: '{% T DayShort %}'
+        },
+        timeFormat: {
+            '': '{% T TimeFormat %}',
+            agenda: '{% T AgendaFormat %}'
+        },
+        firstDay: 1,
+        monthNames: ['{% T January %}', '{% T February %}', '{% T March %}', '{% T April %}', '{% T May %}', '{% T June %}', '{% T July %}', '{% T August %}', '{% T September %}', '{% T October %}', '{% T November %}', '{% T December %}'],
+        monthNamesShort: ['{% T Jan %}', '{% T Feb %}', '{% T Mar %}', '{% T Apr %}', '{% T May %}', '{% T Jun %}', '{% T Jul %}', '{% T Aug %}', '{% T Sep %}', '{% T Oct %}', '{% T Nov %}', '{% T Dec %}'],
+        dayNames: ['{% T Sunday %}', '{% T Monday %}', '{% T Tuesday %}', '{% T Wednesday %}', '{% T Thursday %}', '{% T Friday %}', '{% T Saturday %}'],
+        dayNamesShort: ['{% T Sun %}', '{% T Mon %}', '{% T Tue %}', '{% T Wed %}', '{% T Thu %}', '{% T Fri %}', '{% T Sat %}'],
+        buttonText: {
+            prev: '&nbsp;&#9668;&nbsp;',
+            next: '&nbsp;&#9658;&nbsp;',
+            prevYear: '&nbsp;&lt;&lt;&nbsp;',
+            nextYear: '&nbsp;&gt;&gt;&nbsp;',
+            today: '{% T today %}',
+            month: '{% T month %}',
+            week: '{% T week %}',
+            day: '{% T day %}'
+        },
+        eventClick: function(calEvent, jsEvent, view) {
+            if(calEvent.url)
+                window.location = url;
+            else if(calEvent.private) {
+                showWarningMessage('{% T This is a booking made by another member of {0} ||  data.Business.Name %}');
+                return false;
+            }
+            else
+            {
+                showBooking(calEvent);
+                return false;
+            }
+        },
+        dayClick: function(date, allDay, jsEvent, view) { 
+            {% if data.Coworker != null %}
+            createBooking(date);
+            {% else %}
+            showWarningMessage('{% T Login to make a booking %}');
+            {% endif %}
+        },
+        defaultView:'month',
+        editable: true,
+        header: {
+            left:   'title',
+            center: 'month, agendaWeek',
+            right:  'today prev,next'
+        },
+        eventSources: [
+          {
+              events: [
+                {% for event in data.Local.Bookings %}
+                {
+                    id: {{ event.Id }},
+                    title  : '{{ event.Resource.Name }}',
+                    startDate: '{{event.FromTime | Date: 'd'}}',
+                    endDate: '{{event.ToTime | Date: 'd'}}',
+                  startTime: '{{event.FromTime | Date: 't'}}',
+              endTime: '{{event.ToTime | Date: 't'}}',
+            start  : '{{event.FromTime | Date: 'yyyy' }}-{{ event.FromTime | Date: 'MM' }}-{{ event.FromTime | Date: 'dd' }}T{{ event.FromTime | Date: 'HH' }}:{{ event.FromTime | Date: 'mm' }}',
+        allDay : false,
+        editable: false,
+        ignoreTimezone: true,
+        color: 'black'
+    },
+              {% endfor %}  
+              {% if data.Local.ShowAll and data.Local.ShowAllBookings %}
+              {% for event in data.Local.AllBookings %}
+              {
+                  private: true,
+                  title  : '{{ event.Resource.Name }}',
+                  start  : '{{ event.FromTime | Date: 'yyyy' }}-{{ event.FromTime | Date: 'MM' }}-{{ event.FromTime | Date: 'dd' }}T{{ event.FromTime | Date: 'HH' }}:{{ event.FromTime | Date: 'mm' }}Z',
+                  allDay : false,
+                  editable: false,
+                  ignoreTimezone: true,
+                  color: 'lightgray'
+              },
+              {% endfor %}
+              {% if data.Local.ShowAll %}
+              {% for event in data.Local.Events %}
+              {
+                  private: true,
+                  url: '{% Url events, view, id: event.Id, title: event.Name | Clean %}',
+                  title  : '{{ event.Name }}',
+                  start  : '{{ event.StartDate | Date: 'yyyy' }}-{{ event.StartDate | Date: 'MM' }}-{{ event.StartDate | Date: 'dd' }}T{{ event.StartDate | Date: 'HH' }}:{{ event.StartDate | Date: 'mm' }}Z',
+                  end  : '{{ event.EndDate | Date: 'yyyy' }}-{{ event.EndDate | Date: 'MM' }}-{{ event.EndDate | Date: 'dd' }}T{{ event.EndDate | Date: 'HH' }}:{{ event.EndDate | Date: 'mm' }}Z',
+                  allDay : false,
+                  editable: true,
+                  ignoreTimezone: true
+              },
+              {% endfor %}
+              {% endif %}
+              {% endif %}
+              {
+                  title  : 'BOT',
+                  start  : '1950-01-01T00:00:00',
+                  allDay : false // will make the time show
+              }
+              ]},
+                  '{% Setting Google.CalendarXmlFeed %}'
+                  ]
+                  });
+  
+    $(function () { 
+               
+        var coeff = 1000 * 60 * 15;
+               
+        //Resource filter
+        $('#resource-filter').change(function(){
+            var resourceId = $(this).val();
+            window.location = '{% Url Bookings, Index %}?showAll={{data.Local.ShowAll}}&resourceid=' + resourceId;
+        });
+               
+        //Initialize timepickers
+        $('#Booking_From').datetimepicker({pickSeconds: false});
+        $('#Booking_To').datetimepicker({pickSeconds: false, pickDate: false});
+               
+        //If todate is > from date, move to date ahead
+        $('#Booking_From').on('changeDate', function(){
+            var fromDate = $('#Booking_From').data('datetimepicker').getLocalDate();
+            var toDate = $('#Booking_To').data('datetimepicker').getLocalDate();
+            //Round the date
+            fromDate = new Date(Math.round(fromDate.getTime() / coeff) * coeff);
+            $('#Booking_From').data('datetimepicker').setLocalDate(fromDate);
+                 
+            if(fromDate > toDate) 
+                $('#Booking_To').data('datetimepicker').setLocalDate(fromDate);
+        });
+               
+        //If todate is > from date, move from date back
+        $('#Booking_To').on('changeDate', function(){
+            var fromDate = $('#Booking_From').data('datetimepicker').getLocalDate();
+            var toDate = $('#Booking_To').data('datetimepicker').getLocalDate();
+                 
+            //Round the date
+            toDate = new Date(Math.round(toDate.getTime() / coeff) * coeff);
+            $('#Booking_To').data('datetimepicker').setLocalDate(toDate);
+                 
+            if(fromDate > toDate) 
+                $('#Booking_From').data('datetimepicker').setLocalDate(toDate);
+        });
+               
+        $('#modal_booking form').on("submit", function(event) {
+            var id = $('#booking_id').val();
+            var url;
+            if(id > 0)
+                url = '{% Url Bookings, BookingJson %}';
+            else
+                url = '{% Url Bookings, NewBookingJson %}';
+                 
+            var data = getBookingData();
+            postAndClose(url, data, function(){ location.reload(true); });
+            event.preventDefault();
+        });
+               
+        $('#delete-button').click(function () {
+            if (confirm('{% T Cancel this booking? %}'))
+            {
+                var url = '{% Url Bookings, DeleteJson %}';
+                var id = $('#booking_id').val();
+                postAndClose(url, {id: id}, function(){ location.reload(true); });
+            }
+            return false;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,142 @@
+<!-- MODAL -->
+<div id="modal_booking" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  
+  <form class="row-fluid"  action="{% Url Bookings, Booking %}" method="post">
+    <!-- MODAL HEADER-->
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#215;</button>
+      <h3 >{% T Make a booking %}</h3>
+    </div>
+    <!-- END MODAL HEADER-->
+    
+    <!-- MODAL BODY-->
+    <div class="modal-body">
+      
+      <input type="hidden" id="booking_id" name="Booking.Id" value="" />
+      <input type="hidden" id="Booking_FromTime" name="Booking.FromTime" value="" />
+      <input type="hidden" id="Booking_ToTime" name="Booking.ToTime" value="" />
+      
+      <label>{% T Resource %}</label>
+      {% ResourcesDropdown 0, Booking.Resource, full-width %}
+      
+      <div class="alert alert-info resource_available">
+        <strong>{% T Price %}:</strong> <span id="price">...</span> ({% T Price plan concessions are not included in this price. %})
+      </div>
+      
+      <div class="row-fluid">
+        <div class="span6">
+          <label>{% T From %}</label>
+          <div id="Booking_From" class="input-append date time">
+            <input data-format="yyyy-MM-dd hh:mm" type="text" />
+            <span class="add-on"> 
+              <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+              </i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="span6">
+          <label>{% T To %}</label>
+          <div id="Booking_To" class="input-append date">
+            <input data-format="yyyy-MM-dd hh:mm" type="text" />
+            <span class="add-on"> 
+              <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+              </i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div style="display: none" class="alert alert-danger resource_not_available">
+        <span>{% T Resource is not available at this time %}</span>
+      </div>
+      <div class="alert alert-info">
+        {% T Times are displayed in the following timezone: {0}. || data.Coworker.SimpleTimeZone.Name %}
+      </div>
+    </div>
+    <!-- END MODAL BODY-->
+    
+    <!-- MODAL FOOTER-->
+    <div class="modal-footer">
+      <button id="delete-button" class="btn btn-danger pull-left">{% T Cancel this booking %}</button>
+      <button class="btn btn-link" data-dismiss="modal" aria-hidden="true">{% T Go back %}</button>
+      <button type="submit" class="btn btn-orange">{% T Save booking %}</button>
+    </div>
+  </form>
+  <!-- END MODAL FOOTER-->
+</div>
+<!-- END MODAL -->
+<script>
+    function postAndClose(url, data, callback) {
+        $.post(url, data, function (result) {
+            if (result.WasSuccessful) {
+                $('#modal_booking').modal('hide');
+
+                if (callback) callback();
+                showSuccessMessage(result.Message);
+            }
+            else
+                showErrorMessage(result.Message);
+        });
+    }
+    function createBooking(date) {
+        var $f = $('#modal_booking form');
+        $('#modal_booking').modal('show');
+
+        $('#booking_id').val(0);
+        $('#Booking_From').data('datetimepicker').setLocalDate(date);
+        $('#Booking_To').data('datetimepicker').setLocalDate(date);
+        $('#delete-button').hide();
+        setTimeout(checkBooking, 1000);
+    }
+
+
+    function showBooking(calEvent) {
+        $.get('{% Url Bookings, BookingJson %}/' + calEvent.id, function (data) {
+            var $f = $('#modal_booking form');
+            $f.find('#Booking_Resource').val(data.Value.ResourceId);
+            $('#modal_booking').modal('show');
+
+            $('#booking_id').val(data.Value.Id);
+            $('#Booking_From').data('datetimepicker').setLocalDate(new Date(data.Value.FromTime));
+            $('#Booking_To').data('datetimepicker').setLocalDate(new Date(data.Value.ToTime));
+            $('#delete-button').show();
+            setTimeout(checkBooking, 1000);
+        });
+    }
+
+    function getBookingData() {
+        var fromDate = $('#Booking_From').data('datetimepicker').getLocalDate();
+        var toDate = $('#Booking_To').data('datetimepicker').getLocalDate();
+
+        $('#Booking_FromTime').val(fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate() + ' ' + fromDate.getHours() + ':' + fromDate.getMinutes());
+        $('#Booking_ToTime').val(toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate() + ' ' + toDate.getHours() + ':' + toDate.getMinutes());
+
+        return $('#modal_booking form').serialize();
+    }
+    function checkBooking() {
+
+        var data = getBookingData();
+        function doRequest(result) {
+            getPrice();
+            if (result)
+                $('.resource_not_available').hide();
+            else
+                $('.resource_not_available').show();
+
+            setTimeout(checkBooking, 500);
+        }
+        $.post('{% Url Bookings, IsBookingAvailable %}', data, doRequest);
+    }
+
+
+    function getPrice() {
+        var rd = {
+            resourceId: $('#modal_booking form select').val(),
+            fromTime: $('#Booking_FromTime').val(),
+            toTime: $('#Booking_ToTime').val()
+        }
+        $.post('{% Url Bookings, GetBookingCost %}', rd, function (data) {
+            $('#price').text(data);
+        });
+    }
+</script>

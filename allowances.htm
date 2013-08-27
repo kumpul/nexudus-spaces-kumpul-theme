@@ -1,0 +1,119 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li><a href="{% Url Profile, Index %}">{% T My account %}</a> <span class="divider">/</span></li>
+      <li class="active">{% T Allowances %}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">
+      
+      <h2 class="page-title span12">Allowances</h2>
+      
+      <!-- CONTENT -->
+      <section id="content" class="span12">
+        {% if data.Coworker.TimePasses.size == 0 and data.Coworker.ExtraServices.size == 0 %}
+        <h3>
+          {% T You are not signed up for a price plan or your price plan doesn't include any allowances %}
+        </h3>
+        {% endif %}
+        
+        {% if data.Coworker.TimePasses.size > 0 %}
+        <h3>{% T Access to {0} || data.Business.Name %}</h3>
+        <div class="alert alert-info">
+          {% T The tokens below give you access to {0} during a particular time of the day. No matter how many times you go in and out of the space, only one token will be used,  as long as that time pass is valid for the times you went in and out. || data.Business.Name %}
+        </div>
+        
+        <table class="table table-hover invoices">
+          <tbody>
+            {% for timepass in data.Coworker.TimePasses %}
+            {% if timepass.Used == false %}
+            <tr>
+              <td style="width: 20px"><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
+              <td>
+                {{ timepass.TimePass.Name }}{% if timepass.IsFromTariff %}*{% endif %}
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            {% for timepass in data.Coworker.TimePasses %}
+            {% if timepass.Used %}
+            <tr class="muted">
+              <td style="width: 20px"><span aria-hidden="true" class="icon i-16 icon-close"></span></td>
+              <td>
+                {{ timepass.TimePass.Name }}
+                {% assign usedDate = timepass.UsedDate | Date: 'D'  %} - 
+                {% T used on {0} || usedDate %}
+                {% if timepass.IsFromTariff %}*{% endif %}
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        <!-- TIME PASSES END -->
+        {% if data.Coworker.ExtraServices.size > 0 %}
+        <h3>{% T Access to resources at {0} || data.Business.Name %}</h3>
+        <div class="alert alert-info">
+          {% T The tokens below give you access to book a resource in the space. Some resources are charged  based on the time you used them, some based on the times you used them. %}
+        </div>
+        
+        <table class="table table-hover invoices">
+          <tbody>
+            {% for xs in data.Coworker.ExtraServices %}
+            {% if xs.RemainingUses > 0 %}
+            <tr>
+              <td style="width: 20px"><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
+              <td>
+                {% if xs.InvoiceInMinutes %}
+                {% T Available {0} minutes out of {1} of {2}. || xs.RemainingUses || xs.TotalUses || xs.ExtraService.Name %} {% if xs.IsFromTariff %}*{% endif %}
+                {% else %}
+                {% T {0} out of {1} uses of {2}. || xs.RemainingUses || xs.TotalUses || xs.ExtraService.Name %} {% if xs.IsFromTariff %}*{% endif %}
+                {% endif %}
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            
+            {% for xs in data.Coworker.ExtraServices %}
+            {% if xs.RemainingUses == 0 %}
+            <tr class="muted">
+              <td style="width: 20px"><span aria-hidden="true" class="icon i-16 icon-close"></span></td>
+              <td>
+                {% if xs.InvoiceInMinutes %}
+                {% T Used all {0} minutes of {1}. || xs.TotalUses || xs.ExtraService.Name %} {% if xs.IsFromTariff %}*{% endif %}
+                {% else %}
+                {% T Used all {0} uses of {2}. || xs.TotalUses || xs.ExtraService.Name %} {% if xs.IsFromTariff %}*{% endif %}
+                {% endif %}
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        <p>
+        <a href="{% Url Bookings, Index %}" class="btn btn-orange">{% T Make a booking %}</a>
+        </p>
+        {% endif %}
+        <!-- EXTRA SERVICES END -->
+        
+        <p>
+          <small>(<strong>*</strong>) {% T Included in your price plan %}</small>
+        </p>
+        
+        
+      </section>
+      <!-- END CONTENT -->
+      
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+  
+  
+</div>
+{% endblock %}
