@@ -1,7 +1,8 @@
 Nexudus Spaces - Default Theme
 ============================
 
-These are the original files for the default theme in Nexudus Spaces.
+These are the original files for the default theme in [Nexudus Spaces](http://coworking.nexudus.com/ "Nexudus Spaces").
+
 
 Nexudus Spaces is a service built to help you with the day to day tasks of managing your coworking space. 
 From a single dashboard, you can control all activity and resources in your space, 
