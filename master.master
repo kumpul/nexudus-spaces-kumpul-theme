@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ data.Language }}">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -33,6 +33,7 @@
     <script type="text/javascript" src="/content/themes/public/default/js/jquery-ui-1.10.3.custom.min.js"></script>
     <script type="text/javascript" src="/content/themes/public/default/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/content/themes/public/default/js/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="/content/themes/public/default/js/gcal.js"></script>
     <script type="text/javascript" src="/content/themes/public/default/js/app.js"></script>
     <script src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <!--[if lte IE 7]><script src="js/lte-ie7.js"></script><![endif]-->

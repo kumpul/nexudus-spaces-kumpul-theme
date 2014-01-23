@@ -1,136 +1,150 @@
 {% extends master.master %}
 {% block content %}
 <div id="wrapper">
-  <!-- CONTAINER -->
-  <div id="main" class="container">
-    <!-- BREADCRUMB -->
-    <ul class="breadcrumb">
-      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
-      <li><a href="{% Url Profile, Index %}">{% T My account %}</a> <span class="divider">/</span></li>
-      <li class="active">{% T My price plan %}</li>
-    </ul>
-    <!-- END BREADCRUMB -->
-    <div class="row">
+    <!-- CONTAINER -->
+    <div id="main" class="container">
+        <!-- BREADCRUMB -->
+        <ul class="breadcrumb">
+            <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+            <li><a href="{% Url Profile, Index %}">{% T My account %}</a> <span class="divider">/</span></li>
+            <li class="active">{% T My price plan %}</li>
+        </ul>
+        <!-- END BREADCRUMB -->
+        <div class="row">
       
-      <h2 class="page-title span12">{% T Price plans %}</h2>
+            <h2 class="page-title span12">{% T Price plans %}</h2>
       
-      <!-- CONTENT -->
-      <section id="content" class="span12">
-        {% if data.Coworker.Tariff != null %}
-        <div class="alert alert-info text-center">
-          <h4>{% T Your are in the "{0}" price plan. || data.Coworker.Tariff.Name %}</h4>
-          {% assign renewDateFormated =  data.Coworker.NextInvoice | Date: 'D' %}
-          {% T Your price plan is due for renewal on {0}. || renewDateFormated %}
-        </div>
-        {% endif %}
-        {% if data.Coworker.Tariff.Id != data.Coworker.NextTariff.Id %}
-        <div class="alert alert-warning text-center">
-          <h4>{% T Your price plan is about to change. %}</h4>
-          {% assign renewDateFormated =  data.Coworker.NextInvoice | Date: 'D' %}
-          {% if data.Coworker.NextTariff != null %}
-          {% T Your price plan will change to "{1}" on {0} || renewDateFormated || data.Coworker.NextTariff.Name %}
-          {% else %}
-          {% T Your price will be cancelled on {0} || renewDateFormated %}
-          {% endif %}
-        </div>
-        {% endif %}
-        <div class="accordion" id="accordion-tariffs">
-          {% for tariff in data.Local.Tariffs %}
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-tariffs" href="#collapse-{{tariff.Id}}">{{ tariff.Name }}</a>
-            </div>
-            <div id="collapse-{{tariff.Id}}" class="accordion-body collapse">
-              <div class="accordion-inner">
-                
-                {% if tariff.Description == null %}
-                {% T Please contact us for more details about this price plan %}
-                {% endif %}
-                {{ tariff.Description }}
-                
-                <table class="table table-hover invoices">
-                  <tbody>
-                    {% for service in tariff.ExtraServices %}
-                    <tr>
-                      <td style="width:20px"><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
-                      <td>{{ service.UsesIncluded }}x <strong>{{service.ExtraService.Name }}</strong> {% T per %} {% T service.ServiceRenewalTime %}.</td>
-                    </tr>
-                    {% endfor %}
-                    {% for timePass in tariff.TimePasses %}
-                    <tr>
-                      <td style="width:20px"><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
-                      <td>{{ timePass.PassesIncluded }}x <strong>{{timePass.TimePass.Name }}</strong> {% T per %} {% T timePass.PassRenewalTime %}.</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-                <div>
-                  <a href="#modal-tariff-{{tariff.Id}}" class="btn btn-orange"  role="button" data-toggle="modal">{% T Terms and Conditions %}</a>
+            <!-- CONTENT -->
+            <section id="content" class="span12">
+                {% if data.Coworker.Tariff != null %}
+                <div class="alert alert-info text-center">
+                    <h4>{% T Your are in the "{0}" price plan. || data.Coworker.Tariff.Name %}</h4>
+                    {% assign renewDateFormated =  data.Coworker.NextInvoice | Date: 'D' %}
+                    {% T Your price plan is due for renewal on {0}. || renewDateFormated %}
                 </div>
-              </div>
-            </div>
-          </div>
+                {% endif %}
+                {% if data.Coworker.Tariff.Id != data.Coworker.NextTariff.Id %}
+                <div class="alert alert-warning text-center">
+                    <h4>{% T Your price plan is about to change. %}</h4>
+                    {% assign renewDateFormated =  data.Coworker.NextInvoice | Date: 'D' %}
+                    {% if data.Coworker.NextTariff != null %}
+                    {% T Your price plan will change to "{1}" on {0} || renewDateFormated || data.Coworker.NextTariff.Name %}
+                    {% else %}
+                    {% T Your price will be cancelled on {0} || renewDateFormated %}
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div class="accordion" id="accordion-tariffs">
+                    {% for tariff in data.Local.Tariffs %}
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-tariffs" href="#collapse-{{tariff.Id}}">
+                                {{ tariff.Name }}
+                                {% if tariff.InvoiceInMonths %}
+                                <span class="pull-right">{{ tariff.Price | FormatMoney }}  {{ tariff.Currency.Code }} {% T every %} {{ tariff.InvoiceEvery }} {% T month(s) %}</span>
+                                {% else %}
+                                <span class="pull-right">{{ tariff.Price | FormatMoney }}  {{ tariff.Currency.Code }} {% T every %} {{ tariff.InvoiceEveryWeeks }} {% T week(s) %} </span>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div id="collapse-{{tariff.Id}}" class="accordion-body collapse">
+                            <div class="accordion-inner">
+                
+                                {% if tariff.Description == null %}
+                                {% T Please contact us for more details about this price plan %}
+                                {% endif %}
+                                {{ tariff.Description }}
+                
+                                <table class="table table-hover invoices">
+                                    <tbody>
+                                        {% for service in tariff.ExtraServices %}
+                                        <tr>
+                                            <td style="width:20px"><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
+                                            <td>{{ service.UsesIncluded }}x <strong>{{service.ExtraService.Name }}</strong> {% T per %} {% T service.ServiceRenewalTime %}.</td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% for timePass in tariff.TimePasses %}
+                                        <tr>
+                                            <td style="width:20px"><span aria-hidden="true" class="icon i-16 icon-checkmark"></span></td>
+                                            <td>{{ timePass.PassesIncluded }}x <strong>{{timePass.TimePass.Name }}</strong> {% T per %} {% T timePass.PassRenewalTime %}.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div>
+                                    <a href="#modal-tariff-{{tariff.Id}}" class="btn btn-orange"  role="button" data-toggle="modal">{% T Terms and Conditions %}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
           
-          <div class="modal hide fade" id="modal-tariff-{{tariff.Id}}">
-            <form action="{% Url Profile, Tariff %}" method="post">
-              <input type="hidden" name="Coworker.Tariff" value="{{tariff.Id}}" />
-              <input type="hidden" value="true" name="tc" />
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>{{ tariff.Name }}</h3>
-              </div>
-              <div class="modal-body">
-                <h4>{% T Terms and Conditions %}</h4>
-                <p>
-                  {% if tariff.TermsAndConditions == null %}
-                  {% T Please contact us for more details about this price plan %}
-                  {% endif %}
-                  {{ tariff.TermsAndConditions | StripHtml | MarkDown }}
-                </p>
-              </div>
-              <div class="modal-footer">
-                <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>
-                <button type="submit" href="#" class="btn btn-orange">{% T Accept T&C and Signup %}</button>
-              </div>
-            </form>
-          </div>
-          {% endfor %}
+                    <div class="modal hide fade" id="modal-tariff-{{tariff.Id}}">
+                        <form action="{% Url Profile, Tariff %}" method="post">
+                            <input type="hidden" name="Coworker.Tariff" value="{{tariff.Id}}" />
+                            <input type="hidden" value="true" name="tc" />
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h3>{{ tariff.Name }}</h3>
+                            </div>
+                            <div class="modal-body">
+                                <h4>{% T Terms and Conditions %}</h4>
+                                <p>
+                                    {% if tariff.TermsAndConditions == null %}
+                                    {% T Please contact us for more details about this price plan %}
+                                    {% endif %}
+                                    {{ tariff.TermsAndConditions | StripHtml | MarkDown }}
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>
+                                <button type="submit" href="#" class="btn btn-orange">{% T Accept T&C and Signup %}</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %}
           
-          {% if data.Coworker.Tariff != null %}
-          <a href="#modal-tariff-0" class="btn btn-mini btn-link"  role="button" data-toggle="modal">{% T Cancel my subscription %}</a>
-          <div class="modal hide fade" id="modal-tariff-0">
-            <form action="{% Url Profile, Tariff %}" method="post">
-              <input type="hidden" name="Coworker.Tariff" value="" />
-              <input type="hidden" value="true" name="tc" />
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>{% T Cancel your subscription %}</h3>
-              </div>
-              <div class="modal-body">
+                    {% if data.Coworker.Tariff != null %}
+                    <a href="#modal-tariff-0" class="btn btn-mini btn-link"  role="button" data-toggle="modal">{% T Cancel my subscription %}</a>
+                    <div class="modal hide fade" id="modal-tariff-0">
+                        <form action="{% Url Profile, Tariff %}" method="post">
+                            <input type="hidden" name="Coworker.Tariff" value="" />
+                            <input type="hidden" value="true" name="tc" />
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h3>{% T Cancel your subscription %}</h3>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    {% T Your subscription will be renewed on the {0}. Click "Cancel subscription" to leave this price plan || renewDateFormated %}
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>
+                                <button type="submit" href="#" class="btn btn-orange">{% T Cancel subscription %}</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if data.Coworker.Tariff == null %}
                 <p>
-                  {% T Your subscription will be renewed on the {0}. Click "Cancel subscription" to leave this price plan || renewDateFormated %}
+                    <a class="btn btn-orange" href="{% Url Profile, Index %}">{% T Continue without a price plan %}</a>
                 </p>
-              </div>
-              <div class="modal-footer">
-                <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>
-                <button type="submit" href="#" class="btn btn-danger">{% T Cancel subscription %}</button>
-              </div>
-            </form>
-          </div>
-          {% endif %}
-        </div>
-        {% if data.Coworker.Tariff == null %}
-        <p>
-          <a class="btn btn-grey btn-small pull-right" href="{% Url Profile, Index %}">{% T Continue without a price plan %}</a>
-        </p>
-        {% endif %}
-    </section>
-    <!-- END CONTENT -->
+                {% endif %}
+            </section>
+            <!-- END CONTENT -->
     
-  </div>
-</div>
-<!-- END CONTAINER -->
+        </div>
+    </div>
+    <!-- END CONTAINER -->
 
 
 </div>
+{% endblock %}
+{% block script %}
+{% if data.Local.PricePlanId > 0 %}
+<script>
+    $('#modal-tariff-{{data.Local.PricePlanId}}').modal();
+</script>
+{% endif %}
 {% endblock %}

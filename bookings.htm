@@ -1,67 +1,118 @@
 {% extends master.master %}
 {% block content %}
 <div id="wrapper">
-  <!-- CONTAINER -->
-  <div id="main" class="container">
-    <!-- BREADCRUMB -->
-    <ul class="breadcrumb">
-      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
-      <li class="active">{% T Events and bookings %}</li>
-    </ul>
-    <!-- END BREADCRUMB -->
-    <div class="row">      
-      <h2 class="page-title span12">
-        {% T Events and bookings calendar %}
-        <select id="resource-filter" class="pull-right hidden-phone" style="margin-top: 5px">
-          <option value="">{% T Show all resources %}</option>
-          {% for resource in data.Resources %}
-          <option {%if data.Local.Resource.Id == resource.Id %}selected="selected"{%endif%} value="{{ resource.Id }}">{{ resource.Name }}</option>
-          {% endfor %}
-        </select>
-      </h2>
+    <!-- CONTAINER -->
+    <div id="main" class="container">
+        <!-- BREADCRUMB -->
+        <ul class="breadcrumb">
+            <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+            <li class="active">{% T Events and bookings %}</li>
+        </ul>
+        <!-- END BREADCRUMB -->
+        <div class="row">      
+            <h2 class="page-title span12">
+                {% T Events and bookings calendar %}
+                <select id="resource-filter" class="pull-right hidden-phone" style="margin-top: 5px">
+                    <option value="">{% T Show all resources %}</option>
+                    {% for resource in data.Resources %}
+                    <option {%if data.Local.Resource.Id == resource.Id %}selected="selected"{%endif%} value="{{ resource.Id }}">{{ resource.Name }}</option>
+                    {% endfor %}
+                </select>
+            </h2>
 
-      <!-- CONTENT -->
-      <section id="content" class="span12">
-        {% if data.Coworker != null %}
-        <div class="alert alert-info fade in">
-          <ul style="margin-bottom:0">
-            <li>{% T Click in the calendar to request a booking. %}</li>
-            <li>{% T Times are displayed in the following timezone: {0}. || data.Coworker.SimpleTimeZone.Name %}</li>
-          </ul>
-        </div>
-        {% else %}
-        <p>
-        <a class="btn btn-orange" href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Bookings, Index %}">{% T Login to make a booking %}</a>
-        </p>
-        {% endif %}
-        <div id="calendar" class="well"></div>
-        <div>
-          <span>{% T Legend %}:</span>
-          <span class="label" style="background: black">{% T Your bookings %}</span>
-          <span class="label" style="background: #a1a1a1">{% T Events %}</span>
-          <span class="label" style="background: lightgray">{% T Booked Resource %}</span>
-          {% if data.Coworker != null %}
-          <a onclick="createBooking()" class="btn btn-orange pull-right">{% T Make a booking %}</a>
-          {% else %}
-          <a class="btn btn-orange pull-right" href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Bookings, Index %}">{% T Login to make a booking %}</a>
-          {% endif %}
-        </div>
+            <!-- CONTENT -->
+            <section id="content" class="span12">
+                {% if data.Coworker != null %}
+                <div class="alert alert-info fade in">
+                    <ul style="margin-bottom:0">
+                        <li>{% T Click in the calendar to request a booking. %}</li>
+                        <li>{% T Times are displayed in the following timezone: {0}. || data.Coworker.SimpleTimeZone.Name %}</li>
+                    </ul>
+                </div>
+                {% else %}
+                <p>
+                    <a class="btn btn-orange" href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Bookings, Index %}">{% T Login to make a booking %}</a>
+                </p>
+                {% endif %}
+                <div id="calendar" class="well"></div>
+                <div>
+                    <span>{% T Legend %}:</span>
+                    <span class="label" style="background: black">{% T Your bookings %}</span>
+                    <span class="label" style="background: #a1a1a1">{% T Events %}</span>
+                    <span class="label" style="background: lightgray">{% T Booked Resource %}</span>
+                    {% if data.Coworker != null %}
+                    <a onclick="createBooking()" class="btn btn-orange pull-right">{% T Make a booking %}</a>
+                    {% else %}
+                    <a class="btn btn-orange pull-right" href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Bookings, Index %}">{% T Login to make a booking %}</a>
+                    {% endif %}
+                </div>
         
-      </section>
-      <!-- END CONTENT -->
+            </section>
+            <!-- END CONTENT -->
+        </div>
     </div>
-  </div>
-  <!-- END CONTAINER -->
+    <!-- END CONTAINER -->
   
-  {% include booking.htm %}
+    {% include booking.htm %}
 </div>
+
+<!-- UNPAID BOOKING MODAL -->
+{% if data.Local.UnpaidBookings.size > 0 %}
+<!-- MODAL -->
+<div id="modal_unpaidbooking" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  
+  <form class="row-fluid"  action="{% Url Bookings, Pay %}" method="post">
+    <!-- MODAL HEADER-->
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#215;</button>
+      <h3 >{% T Booking payment %}</h3>
+    </div>
+    <!-- END MODAL HEADER-->
+    
+    <!-- MODAL BODY-->
+    <div class="modal-body">
+      <h5>
+        {% T The following bookings require payment before they are confirmed: %}
+      </h5>
+      <table class="table">
+        <thead>
+          <th>{% T Resource %}</th>
+          <th>{% T From %}</th>
+        </thead>
+        <tbody>
+          {% for booking in data.Local.UnpaidBookings %}
+          <tr>
+            <td>{{ booking.Resource.Name }}</td>
+            <td>{{ booking.FromTime | FormatDate: 'g' }} </td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="alert alert-info">
+        {% T Please pay the bookings above within the next 15 minutes to make sure the booking slot is not made available to other members %}
+      </div>
+    </div>
+    <!-- END MODAL BODY-->
+    
+    <!-- MODAL FOOTER-->
+    <div class="modal-footer">
+      <button class="btn btn-link" data-dismiss="modal" aria-hidden="true">{% T Go back %}</button>
+      <button type="submit" class="btn btn-orange">{% T Pay these bookings %}</button>
+    </div>
+  </form>
+  <!-- END MODAL FOOTER-->
+</div>
+<!-- END MODAL -->
+{% endif %}
+<!-- END UNPAID BOOKING MODAL -->
+
 {% endblock %}
 {% block script %}
 
 <script>
+    $('#modal_unpaidbooking').modal();    
     
-
-  
     var fc = $('#calendar').fullCalendar({
         allDayText: '{% T All day %}',
         axisFormat: '{% T AxisFormat %}',
@@ -127,12 +178,13 @@
                 {% for event in data.Local.Bookings %}
                 {
                     id: {{ event.Id }},
-                    title  : '{{ event.Resource.Name }}',
+                    title  : '{{ event.Resource.Name | Replace: "'", "\'" }}',
                     startDate: '{{event.FromTime | Date: 'd'}}',
                     endDate: '{{event.ToTime | Date: 'd'}}',
                   startTime: '{{event.FromTime | Date: 't'}}',
               endTime: '{{event.ToTime | Date: 't'}}',
-            start  : '{{event.FromTime | Date: 'yyyy' }}-{{ event.FromTime | Date: 'MM' }}-{{ event.FromTime | Date: 'dd' }}T{{ event.FromTime | Date: 'HH' }}:{{ event.FromTime | Date: 'mm' }}',
+              start  : '{{event.FromTime | Date: 'yyyy' }}-{{ event.FromTime | Date: 'MM' }}-{{ event.FromTime | Date: 'dd' }}T{{ event.FromTime | Date: 'HH' }}:{{ event.FromTime | Date: 'mm' }}',
+              end  : '{{ event.ToTime | Date: 'yyyy' }}-{{ event.ToTime  | Date: 'MM' }}-{{ event.ToTime  | Date: 'dd' }}T{{ event.ToTime  | Date: 'HH' }}:{{ event.ToTime  | Date: 'mm' }}Z',
         allDay : false,
         editable: false,
         ignoreTimezone: true,
@@ -143,8 +195,9 @@
               {% for event in data.Local.AllBookings %}
               {
                   private: true,
-                  title  : '{{ event.Resource.Name }}',
+                  title  : '{{ event.Resource.Name | Replace: "'", "\'" }}',
                   start  : '{{ event.FromTime | Date: 'yyyy' }}-{{ event.FromTime | Date: 'MM' }}-{{ event.FromTime | Date: 'dd' }}T{{ event.FromTime | Date: 'HH' }}:{{ event.FromTime | Date: 'mm' }}Z',
+                  end  : '{{ event.ToTime | Date: 'yyyy' }}-{{ event.ToTime  | Date: 'MM' }}-{{ event.ToTime  | Date: 'dd' }}T{{ event.ToTime  | Date: 'HH' }}:{{ event.ToTime  | Date: 'mm' }}Z',
                   allDay : false,
                   editable: false,
                   ignoreTimezone: true,
@@ -152,11 +205,12 @@
               },
               {% endfor %}
               {% if data.Local.ShowAll %}
+              {% if data.Local.Resource == null %}
               {% for event in data.Local.Events %}
               {
                   private: true,
                   url: '{% Url events, view, id: event.Id, title: event.Name | Clean %}',
-                  title  : '{{ event.Name }}',
+                  title  : '{{ event.Name | Replace: "'", "\'" }}',
                   start  : '{{ event.StartDate | Date: 'yyyy' }}-{{ event.StartDate | Date: 'MM' }}-{{ event.StartDate | Date: 'dd' }}T{{ event.StartDate | Date: 'HH' }}:{{ event.StartDate | Date: 'mm' }}Z',
                   end  : '{{ event.EndDate | Date: 'yyyy' }}-{{ event.EndDate | Date: 'MM' }}-{{ event.EndDate | Date: 'dd' }}T{{ event.EndDate | Date: 'HH' }}:{{ event.EndDate | Date: 'mm' }}Z',
                   allDay : false,
@@ -166,13 +220,14 @@
               {% endfor %}
               {% endif %}
               {% endif %}
+              {% endif %}
               {
                   title  : 'BOT',
                   start  : '1950-01-01T00:00:00',
                   allDay : false // will make the time show
               }
               ]},
-                  '{% Setting Google.CalendarXmlFeed %}'
+                  $.fullCalendar.gcalFeed('{% Setting Google.CalendarXmlFeed %}')
                   ]
                   });
   

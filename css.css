@@ -691,6 +691,7 @@ footer{
 	}
 
     .member_block .btn .icon, .skills .btn .icon, .resource_features .btn .icon { margin-right: 0;}
+    .resource_features > span { margin-bottom: 5px !important;}
     
 
 /* filter */
@@ -798,7 +799,7 @@ footer{
 }
 
 .body-content {
-    min-height: 160px;
+    
 }
 .body-content > .thumbnail.pull-left{
 	margin: 0 20px 20px 0;
@@ -925,3 +926,66 @@ footer{
 .icon-chevron-down:before {
 	content: "\e1d0" !important;
 }
+
+/* Collboration */
+
+  label.error {
+    color: red;
+    font-size:10px;
+  }
+  
+  .workspace-card {
+    width: 184px;
+    height: 235px;
+    float: left;
+    margin: 0 20px 20px 0;
+    position: relative;
+    text-align: left;
+    background: #fff;
+    padding: 15px;
+    text-rendering: optimizeLegibility;
+    -webkit-box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+  }
+  .workspace-card a.workspace-link {
+    height: 235px;
+    display: block;
+    text-decoration: none;
+    color: #858585;
+  }
+  .workspace-card h5 {
+    font-size: 18px;
+    margin: 0 0 5px;
+    line-height: 1.1em;
+    word-wrap: break-word;
+  }
+  .workspace-card .summary {
+    font-size: 13px;
+    line-height: 1.2em;
+    word-wrap: break-word;
+  }
+  .workspace-card .members {
+    position: absolute;
+    left: 16px;
+    bottom: 15px;
+    zoom: 1;
+  }
+  .workspace-card .members img {
+    border: 1px solid rgba(0,0,0,0.3);
+    margin: 0 2px 2px 0 !important;
+  }
+  .workspace-card .members label {
+    font-size: 12px;
+  }
+  .workspace-card input{ 
+  	margin: 0
+  }
+  .workspace-card .icon-remove {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }

@@ -1,0 +1,107 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <!-- BREADCRUMB -->
+    <ul class="breadcrumb">
+      <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
+      <li class="active">{% T Events %}</li>
+    </ul>
+    <!-- END BREADCRUMB -->
+    <div class="row">
+      
+      <!-- CONTENT -->
+      <section id="content" class="span9">
+        {% if data.Local.CalendarEvents.size == 0 %}
+        <h3 class="well">{% T There are no more events. %}</h3>
+        <a class="btn btn-orange" href="{% Url Events, Index, page: data.Local.Page | Minus: 1 %}">{% T Go back %}</a>
+        {% endif %}
+        {% for ev in data.Local.CalendarEvents %}
+        <article class="post">
+          <h2 class="page-title"><a href="{% Url Events, View, Id: ev.Id, title: ev.Name | Clean %}">{{ ev.Name | StripHtml }}</a></h2>
+          <!-- POST INFO -->
+          <ul class="post-info">
+            <li>
+              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="{% Url Events, ICal, Id: ev.Id %}">{{ ev.StartDate | Date: 'd MMMM @ h:mm tt' }}</a>
+            </li>
+            <li>
+              <span aria-hidden="true" class="icon i-16 icon-bubble"></span> <a href="{% Url Events, View, Id: ev.Id, title: ev.Name | Clean %}#comments">{% T {0} Comment(s) || ev.Comments.size %}</a>
+            </li>
+
+          </ul>
+          <!-- END POST INFO -->
+          <!-- POST CONTENT -->
+          <div class="event-content">
+            <div class="row">
+              {% if ev.HasSmallImage %}
+              <div class="span2">
+                <a href="{% Url Events, View, Id: ev.Id, title: ev.Name | Clean %}" class="thumbnail pull-left">
+                  <img style="width:100%" src="{% Url Events, GetSmallImage, id: ev.Id, h: 200, w: 200 %}" alt="{{ ev.Title | StripHtml }}" class="entry-image" />
+                </a>
+                <div class="clearfix"></div>
+              </div>
+              {% endif %}    
+              <div class="{% if ev.HasSmallImage %}span7{%else%}span9{%endif%}">
+                {{ ev.ShortDescription | StripHtml | MarkDown }}
+                <p>
+                  <a class="btn btn-orange" href="{% Url Events, View, Id: ev.Id, title: ev.Name | Clean %}">{% T Read more %}</a>
+                  <a class="btn btn-grey" href="{% Url Events, ICal, Id: ev.Id, title: ev.Name | Clean %}">{% T Add to Calendar %}</a>
+                </p>    
+              </div>
+            </div>                   
+          </div>
+          <!-- END POST CONTENT -->
+        </article>
+        
+        {% endfor %}
+        
+        <!-- PAGINATION -->
+        <div class="pagination pagination-centered">
+          <ul>
+            {% if(data.Local.Page == 1 %}
+            <li class="disabled"><a href="#">&#8249;</a></li>
+            {% else %}
+            <li><a href="{% Url Events, Index, page: data.Local.Page | Minus: 1 %}">&#8249;</a></li>
+            <li><a href="{% Url Events, Index, page: data.Local.Page | Minus: 1 %}">{{ data.Local.Page | Minus: 1 }}</a></li>
+            {% endif %}
+            <li class="active"><a href="#">{{ data.Local.Page }}</a></li>
+            {% if data.Local.CalendarEvents.size == 0 %}
+            <li class="disabled"><a href="#">&#8250;</a></li>
+            {% else %}
+            <li><a href="{% Url Events, Index, page: data.Local.Page | Plus: 1 %}">{{ data.Local.Page | Plus: 1 }}</a></li>
+            <li><a href="{% Url Events, Index, page: data.Local.Page | Plus: 1 %}" class="next">&#8250;</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <!-- END PAGINATION -->
+        
+      </section>
+      <!-- END CONTENT -->
+      
+      <!-- SIDEBAR -->
+      <aside id="sidebar-right" class="span3">
+        <!-- WIDGET FLICKR -->
+        <div class="widget widget-flickr">
+          <div class="widget-title">
+            <h3>{% T Twitter feed %}</h3>
+          </div>
+          <div class="widget-body">
+            {% if data.Setting_Social_Twitter != "" %}
+            <a class="twitter-timeline" data-tweet-limit="5" data-chrome="noheader nofooter noborders" href="https://twitter.com/twitterapi" data-widget-id="{% Setting Social.Twitter %}"></a>
+            {% else %}
+            <div class="well no-content text-center">
+              <span aria-hidden="true" class="icon i-48 icon-twitter-2"></span>
+              <p><strong><a target="_blank" href="https://spaces.nexudus.com/Settings">{% T Click here to setup Twitter %}</a></strong></p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <!-- END WIDGET FLICKR -->
+      </aside>
+      <!-- END SIDEBAR -->
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+</div>
+{% endblock %}

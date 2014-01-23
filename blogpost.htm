@@ -47,63 +47,66 @@
             </div>
             {% endif %}
             <p>
-              {{ data.Local.BlogPost.FullText | StripHtml | MarkDown }}
+              {{ data.Local.BlogPost.FullText }}
             </p>
           </div>
           <!-- END POST CONTENT -->
         </article>
         
-        {% if data.Local.BlogPost.AllowComments %}
+        
         <!-- COMMENTS -->
+        {% if data.Local.BlogPost.AllowComments or data.Local.BlogPost.Comments.size  > 0 %}
         <h3>{% T Comments %}</h3>
-            {% for item in data.Local.BlogPost.Comments %}
-            <!-- COMMENT -->
-            <div class="media comment">
-              
-              <a class="media-object pull-left" href="{% Url Directory, Profile, id: item.PostedBy.Coworker.Id, name: item.FromUser.Coworker.FullName | Clean %}">
-                {% if item.PostedBy.Coworker.HasAvatar %}
-                <img class="img-circle" height="64" width="64" src="{% Url Coworker, GetAvatar, id: item.PostedBy.Coworker.Id, h:64, w:64 %}" alt="{{ item.PostedBy.FullName | Capitalize }}" >          
-                {% else %}
-                <img class="img-circle" height="64" width="64" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ item.PostedBy.FullName | Capitalize }}" >
-                {% endif %}
-              </a>
-              
-              <div class="media-body">
-                <h4 class="media-heading">{{ item.PostedBy.FullName | Capitalize }} </h4>
-                <blockquote>
-                  <p>{{ item.Text | StripHtml | MarkDown }}</p>
-                  <small>{{ item.CreatedOn | Date: 'd MMMM @htt' }}</small>
-                </blockquote>
-                
-              </div>
-            </div>
-            <!-- END COMMENT -->
-            {% endfor %}
-            {% if data.UserIsLoggedIn %}
-            <div class="media comment comment-form">
-              
-              <a class="media-object pull-left" href="{% Url Directory, Profile, id: data.Coworker.Id %}">
-                {% if data.Coworker.HasAvatar %}
-                <img class="img-circle" height="64" width="64" src="{% Url Coworker, GetAvatar, id: data.Coworker.Id, h:64, w:64 %}" alt="{{ data.Coworker.FullName | Capitalize }}" >
-                {% else %}
-                <img class="img-circle" height="64" width="64" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ data.Coworker.FullName | Capitalize }}" >
-                {% endif %}
-              </a>
-              <div class="media-body">
-                <form class="row-fluid" method="post" action="{% Url Blog, NewComment %}">
-                  {% AntiforgeryToken %}
-                  <input type="hidden" name="id" value="{{ data.Local.BlogPost.Id }}"/>
-                  <input type="hidden" id="title" name="title" required="required" value="{{data.Local.BlogPost.Title}}"> 
-                  <textarea class="span12" name="comment" required="required"></textarea>
-                  <button type="submit" class="btn btn-orange pull-right">{% T Post message %}</button>
-                </form>
-              </div>
-            </div>
+        {% endif %}
+        {% for item in data.Local.BlogPost.Comments %}
+        <!-- COMMENT -->
+        <div class="media comment">
+          
+          <a class="media-object pull-left" href="{% Url Directory, Profile, id: item.PostedBy.Coworker.Id, name: item.FromUser.Coworker.FullName | Clean %}">
+            {% if item.PostedBy.Coworker.HasAvatar %}
+            <img class="img-circle" height="64" width="64" src="{% Url Coworker, GetAvatar, id: item.PostedBy.Coworker.Id, h:64, w:64 %}" alt="{{ item.PostedBy.FullName | Capitalize }}" >          
             {% else %}
-            <div class="media comment comment-form">
-              <a href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Blog, Read, Id: post.Id, title: post.Title | Clean %}" class="btn btn-orange">{% T Login to leave a message %}</a>
-            </div>
+            <img class="img-circle" height="64" width="64" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ item.PostedBy.FullName | Capitalize }}" >
             {% endif %}
+          </a>
+          
+          <div class="media-body">
+            <h4 class="media-heading">{{ item.PostedBy.FullName | Capitalize }} </h4>
+            <blockquote>
+              <p>{{ item.Text | StripHtml | MarkDown }}</p>
+              <small>{{ item.CreatedOn | Date: 'd MMMM @htt' }}</small>
+            </blockquote>
+            
+          </div>
+        </div>
+        <!-- END COMMENT -->
+        {% endfor %}
+        {% if data.Local.BlogPost.AllowComments %}
+        {% if data.UserIsLoggedIn %}
+        <div class="media comment comment-form">
+          
+          <a class="media-object pull-left" href="{% Url Directory, Profile, id: data.Coworker.Id %}">
+            {% if data.Coworker.HasAvatar %}
+            <img class="img-circle" height="64" width="64" src="{% Url Coworker, GetAvatar, id: data.Coworker.Id, h:64, w:64 %}" alt="{{ data.Coworker.FullName | Capitalize }}" >
+            {% else %}
+            <img class="img-circle" height="64" width="64" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ data.Coworker.FullName | Capitalize }}" >
+            {% endif %}
+          </a>
+          <div class="media-body">
+            <form class="row-fluid" method="post" action="{% Url Blog, NewComment %}">
+              {% AntiforgeryToken %}
+              <input type="hidden" name="id" value="{{ data.Local.BlogPost.Id }}"/>
+              <input type="hidden" id="title" name="title" required="required" value="{{data.Local.BlogPost.Title}}"> 
+              <textarea class="span12" name="comment" required="required"></textarea>
+              <button type="submit" class="btn btn-orange pull-right">{% T Post message %}</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="media comment comment-form">
+          <a href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Blog, Read, Id: post.Id, title: post.Title | Clean %}" class="btn btn-orange">{% T Login to leave a message %}</a>
+        </div>
+        {% endif %}
         <!-- END COMMENTS -->
         {% endif %}
         

@@ -6,7 +6,7 @@
     <!-- BREADCRUMB -->
     <ul class="breadcrumb">
       <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
-      <li><a href="{% Url Bookings, Index %}">{% T Events and bookings %}</a> <span class="divider">/</span></li>
+      <li><a href="{% Url Events, Index %}">{% T Events %}</a> <span class="divider">/</span></li>
       <li class="active">{{ data.Local.Event.Name }}</li>
     </ul>
     <!-- END BREADCRUMB -->
@@ -18,7 +18,7 @@
           <h2 class="page-title"><a href="{% Url events, view, id: data.Local.Event.Id, title: data.Local.Event.Name | Clean %}">{{ data.Local.Event.Name }}</a></h2>
           <ul class="post-info">
             <li>
-              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="#">{{ data.Local.Event.StartDate | Date: 'D' }}</a>
+              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="#">{{ data.Local.Event.StartDate | Date: 'D' }} {{ data.Local.Event.StartDate | Date: '@ h:mmtt' }}</a>
             </li>
             <li>
               <span aria-hidden="true" class="icon i-16 icon-bubble"></span> <a href="#comments">{% T {0} Comment(s) || data.Local.Event.Comments.size %}</a>
@@ -55,11 +55,16 @@
                 <i class="icon-ticket"></i>
                 {% T Buy Tickets %}</a>
               {% endif %}
+              <a class="btn btn-grey" href="{% Url Events, ICal, Id: data.Local.Event.Id, title: ev.Name | Clean %}">
+                <i class="icon-calendar"></i> 
+                {% T Add to Calendar %}</a>
             </p>
           </div>
         </article>
         
+        {% if data.Local.Event.AllowComments or data.Local.Event.Comments.size > 0  %}
         <h3 id="comments">{% T Comments %}</h3>
+        {% endif %}
         {% for comment in data.Local.Event.Comments %}
         <!-- COMMENT -->
         <div class="media comment">

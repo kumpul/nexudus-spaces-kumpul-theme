@@ -13,7 +13,7 @@
       <div id="invoice" class="pagestyle">
         <div id="invoice-header">
           {% if data.Local.Invoice.Business.HasLogo %}
-          <img width="250" class="logo" src="{% Url Business, GetLogo, w: 250 %}">
+          <img class="logo" src="{% Url Business, GetLogo, h: 100 %}">
           {% else %}
           <div class="title" class="logo" style="font-size: 4em; color: Black; font-family: Open Sans, sans-serif;">{{ data.Local.Invoice.Business.Name }}</div>
           {% endif %}
@@ -61,10 +61,10 @@
         </div>
         <div class="adr">
           <div class="street-address">
-            {{ data.Local.Invoice.TaxIDNumber }}
+            {{ data.Local.Invoice.BillToTaxIDNumber }}
           </div>
           <div class="street-address">
-            {{ data.Local.Invoice.BillToAddres | NewLineToBr }}
+            {{ data.Local.Invoice.BillToAddress | NewLineToBr }}
           </div>
           <div class="locality">
             {{ data.Local.Invoice.BillToCity }}

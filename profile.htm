@@ -59,6 +59,63 @@
               <a target="blank" href="/Login/ResetPassword?lang=en&email={{ data.Coworker.User.Email }}" class="btn btn-grey">{% T Change password %}</a>
             </div>
           </div>
+          
+          {% if data.Local.HasCustomFields %}
+          <h3>{% T Other Details %}</h3>
+          <div class="well">
+			{% for field in data.Local.CustomFields %}
+            {% capture customFieldName %}Custom{{ field.CustomFieldIndex}}{%endcapture%}
+            <div class="row-fluid">
+              {% if field.FieldType == 'Text'  %}
+              <div class="span12">
+                <label>{% T field.Name %}</label>
+                <input type="text" id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}" value="{{data.Coworker[customFieldName]}}"  class="span12"> 
+              </div>
+              {% elseif field.FieldType == 'LongText' %}
+              <div class="span12">
+                <label>{% T field.Name %}</label>
+                <textarea id="Textarea1" name="Coworker.{{ customFieldName }}" class="span12">{{data.Coworker[customFieldName]}}</textarea>
+              </div>
+              {% elseif field.FieldType == 'Boolean' %}
+              <div class="span12">
+                <label class="checkbox">
+                  <input id="Checkbox1" name="Coworker.{{ customFieldName }}" type="checkbox" {% if data.Coworker[customFieldName] == 'true' %}checked="checked"{% endif %} value="true" >
+                  <input id="Hidden1" name="Coworker.{{ customFieldName }}" type="hidden" value="false">
+                  {% T field.Name %}
+                </label>
+              </div>
+              {% elseif field.FieldType == 'Dropdown' %}
+              <div class="span12">
+                <label>{% T field.Name %}</label>
+                <select id="Select1" name="Coworker.{{ customFieldName }}" class="span12">
+                  <option></option>
+                  {% for opt in field.AvailableOptionArray %}
+                  <option {% if opt == {{data.Coworker[customFieldName]}} %}selected="selected"{% endif %}>{{opt}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% elseif field.FieldType == 'Date' %}
+              <div class="span12">
+                <label>{% T field.Name %}</label>
+                <div class="input-append date">
+                  <input data-format="yyyy-MM-dd hh:mm" type="text" id="Text1" name="Coworker.{{ customFieldName }}"  />
+                  <span class="add-on"> 
+                    <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+                    </i>
+                  </span>
+                </div>
+              </div>
+              {% else %}
+              <div class="span12">
+                <label>{% T field.Name %}</label>
+                <input type="text" id="Coworker_Custom{{ field.CustomFieldIndex }}" name="Coworker.Custom{{ field.CustomFieldIndex }}" value="{{data.Coworker[customFieldName]}}"  class="span2"> 
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          
           <h3>{% T Account details %}</h3>
           <div class="well">
             <div class="row-fluid">
@@ -156,7 +213,7 @@
               <div class="span12">
                 <label class="checkbox">
                   <input id="Coworker_ProfileIsPublic" name="Coworker.ProfileIsPublic" type="checkbox" value="true" {% if !data.Coworker.ProfileIsPublic %} checked="checked" {% endif %}/>
-                  <input id="Hidden1" name="Coworker.ProfileIsPublic" type="hidden" value="false" />
+                  <input id="Hidden2" name="Coworker.ProfileIsPublic" type="hidden" value="false" />
                   {% T Publish my profile %}
                 </label>
               </div>

@@ -93,12 +93,15 @@
       <div class="well well-large text-center">
         <h3 class="subheader">{% T Are you looking for a place to work, learn and share? %}</h3>
         <h3>
-          {% if data.Local.ChepeastPlan > 0 %}
-          {% assign cheapestPlan = data.Local.ChepeastPlan | FormatDecimal format: '0.00' %}
-          {% T Prices from {0} {1} a month. || cheapestPlan || {{ data.Business.Currency.Code }} %}
+          {% if data.Local.ChepeastPlan != null %}
+			{% if data.Local.ChepeastPlan.InvoiceInMonths %}
+				{% T Prices from {0} {1} a month. || data.Local.ChepeastPlan.Price || {{ data.Business.Currency.Code }} %}
+			{% else %}
+				{% T Prices from {0} {1} a week. || data.Local.ChepeastPlan.Price || {{ data.Business.Currency.Code }} %}
+			{% endif %}
           {% else %}
-          {% T Contact with us for more information about our price plans. %}
-          {% endif %}
+			{% T Contact with us for more information about our price plans. %}
+		  {% endif %}
         </h3>
         <a href="{% Url Contact, Index %}" class="btn btn-orange btn-large">{% T Contact %}</a>
         <a href="{% Url Bookings, Index %}" class="btn btn-orange btn-large">{% T Make a booking %}</a>
@@ -241,7 +244,7 @@
                       
                       {% T From {0} {1} ||  service.Price  || service.Currency.Code %}  
                       -
-                      <a onclick="window.location='{% Url Bookings, Index %}'" href="{% Url Signup, Index %}">{% T Signup %}</a>
+                      <a onclick="window.location='{% Url Bookings, Index %}?priceplanid={{ service.Id }}'" href="{% Url Signup, Index %}?priceplanid={{ service.Id }}">{% T Signup %}</a>
                     </small>
                   </p>
                 </div>
@@ -265,7 +268,7 @@
     <div class="container">
       <h3>{% T People at {0} || data.Business.Name %}</h3>
       <div class="row">
-        {% for member in data.Local.Members %}
+        {% for member in data.Local.Members limit:8 %}
         <!-- member -->
         <div class="member_block span3 text-center">
           <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="user_avatar">
@@ -286,10 +289,10 @@
           <a target="_blank" href="http://twitter.com/{{ member.Twitter }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-twitter"></span></a>
           {% endif %}
           {% if member.Linkedin.size > 0 %}
-          <a target="_blank" href="{{ data.Local.Coworker.Linkedin }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-linkedin"></span></a>
+          <a target="_blank" href="{{ member.Linkedin }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-linkedin"></span></a>
           {% endif %}
           {% if member.Facebook.size > 0 %}
-          <a target="_blank" href="https://www.facebook.com/{{ data.Local.Coworker.Facebook }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-facebook"></span></a>
+          <a target="_blank" href="{{ member.Facebook }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-facebook"></span></a>
           {% endif %}
         </div>
         <!-- END member -->

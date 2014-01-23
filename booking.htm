@@ -16,13 +16,10 @@
       <input type="hidden" id="Booking_FromTime" name="Booking.FromTime" value="" />
       <input type="hidden" id="Booking_ToTime" name="Booking.ToTime" value="" />
       
-      <label>{% T Resource %}</label>
-      {% ResourcesDropdown 0, Booking.Resource, full-width %}
-      
-      <div class="alert alert-info resource_available">
-        <strong>{% T Price %}:</strong> <span id="price">...</span> ({% T Price plan concessions are not included in this price. %})
+      <div class="row-fluid">
+      	<label>{% T Resource %}</label>
+      	{% ResourcesDropdown 0, Booking.Resource, span12 %}
       </div>
-      
       <div class="row-fluid">
         <div class="span6">
           <label>{% T From %}</label>
@@ -46,11 +43,17 @@
           </div>
         </div>
       </div>
+      <div class="row-fluid">
+        <div class="span12">
+          <label>{% T Notes %}</label>
+          <textarea class="span12" id="Booking_Notes" name="Booking.Notes"></textarea>
+        </div>
+      </div>
+      <div class="alert alert-info resource_available">
+        <strong>{% T Price %}:</strong> <span id="price">...</span> ({% T Price plan concessions are not included in this price. %})
+      </div>
       <div style="display: none" class="alert alert-danger resource_not_available">
         <span>{% T Resource is not available at this time %}</span>
-      </div>
-      <div class="alert alert-info">
-        {% T Times are displayed in the following timezone: {0}. || data.Coworker.SimpleTimeZone.Name %}
       </div>
     </div>
     <!-- END MODAL BODY-->
@@ -97,9 +100,10 @@
             $('#modal_booking').modal('show');
 
             $('#booking_id').val(data.Value.Id);
-            $('#Booking_From').data('datetimepicker').setLocalDate(new Date(data.Value.FromTime));
-            $('#Booking_To').data('datetimepicker').setLocalDate(new Date(data.Value.ToTime));
+            $('#Booking_From').data('datetimepicker').setDate(new Date(data.Value.FromTime));
+            $('#Booking_To').data('datetimepicker').setDate(new Date(data.Value.ToTime));
             $('#delete-button').show();
+            $('#Booking_Notes').val(data.Value.Notes);
             setTimeout(checkBooking, 1000);
         });
     }
@@ -118,14 +122,16 @@
         var data = getBookingData();
         function doRequest(result) {
             getPrice();
-            if (result)
+            if (result.ok)
                 $('.resource_not_available').hide();
-            else
+            else {
                 $('.resource_not_available').show();
+                $('.resource_not_available').text(result.message);
+            }
 
             setTimeout(checkBooking, 500);
         }
-        $.post('{% Url Bookings, IsBookingAvailable %}', data, doRequest);
+        $.post('{% Url Bookings, IsBookingAvailableDetails %}', data, doRequest);
     }
 
 

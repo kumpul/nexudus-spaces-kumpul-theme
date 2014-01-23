@@ -43,43 +43,48 @@
           <!-- END POST INFO -->
           <!-- POST CONTENT -->
           <div class="body-content">
-            {% if post.HasImage %}
-            <a href="{% Url Blog, Read, Id: post.Id, title: post.Title | Clean %}" class="thumbnail pull-left">
-              <img src="{% Url Blog, GetImage, id: post.Id, h: 140, w: 140 %}" alt="{{ post.Title | StripHtml }}" class="entry-image" />
-            </a>
-            {% endif %}
-            <p>
-              {{ post.SummaryText | StripHtml | MarkDown }}
-            </p>
-            <p>
-              <a href="{% Url Blog, Read, Id: post.Id, title: post.Title | Clean %}">{% T Read more %}</a>
-            </p>
+            <div class="row">
+              {% if post.HasImage %}
+              <div class="span2">
+                <a href="{% Url Blog, Read, Id: post.Id, title: post.Title | Clean %}" class="thumbnail pull-left">
+                  <img style="width:100%" src="{% Url Blog, GetImage, id: post.Id, h: 200, w: 200 %}" alt="{{ post.Title | StripHtml }}" class="entry-image" />
+                </a>
+                <div class="clearfix"></div>
+              </div>
+              {% endif %}    
+              <div class="{% if post.HasImage %}span7{%else%}span9{%endif%}">
+                {{ post.SummaryText | StripHtml | MarkDown }}
+                <p>
+                  <a href="{% Url Blog, Read, Id: post.Id, title: post.Title | Clean %}">{% T Read more %}</a>
+                </p>    
+              </div>
+            </div>                   
           </div>
           <!-- END POST CONTENT -->
         </article>
         
-        {% endfor %}
-        
-        <!-- PAGINATION -->
-        <div class="pagination pagination-centered">
-          <ul>
-            {% if(data.Local.Page == 1 %}
-            <li class="disabled"><a href="#">&#8249;</a></li>
-            {% else %}
-            <li><a href="{% Url Blog, Index, page: data.Local.Page | Minus: 1 %}">&#8249;</a></li>
-            <li><a href="{% Url Blog, Index, page: data.Local.Page | Minus: 1 %}">{{ data.Local.Page | Minus: 1 }}</a></li>
-            {% endif %}
-            <li class="active"><a href="#">{{ data.Local.Page }}</a></li>
-            {% if data.Local.BlogPosts.size == 0 %}
-            <li class="disabled"><a href="#">&#8250;</a></li>
-            {% else %}
-            <li><a href="{% Url Blog, Index, page: data.Local.Page | Plus: 1 %}">{{ data.Local.Page | Plus: 1 }}</a></li>
-            <li><a href="{% Url Blog, Index, page: data.Local.Page | Plus: 1 %}" class="next">&#8250;</a></li>
-            {% endif %}
-          </ul>
-        </div>
-        <!-- END PAGINATION -->
-        
+          {% endfor %}
+          
+          <!-- PAGINATION -->
+          <div class="pagination pagination-centered">
+            <ul>
+              {% if(data.Local.Page == 1 %}
+              <li class="disabled"><a href="#">&#8249;</a></li>
+              {% else %}
+              <li><a href="{% Url Blog, Index, page: data.Local.Page | Minus: 1 %}">&#8249;</a></li>
+              <li><a href="{% Url Blog, Index, page: data.Local.Page | Minus: 1 %}">{{ data.Local.Page | Minus: 1 }}</a></li>
+              {% endif %}
+              <li class="active"><a href="#">{{ data.Local.Page }}</a></li>
+              {% if data.Local.BlogPosts.size == 0 %}
+              <li class="disabled"><a href="#">&#8250;</a></li>
+              {% else %}
+              <li><a href="{% Url Blog, Index, page: data.Local.Page | Plus: 1 %}">{{ data.Local.Page | Plus: 1 }}</a></li>
+              <li><a href="{% Url Blog, Index, page: data.Local.Page | Plus: 1 %}" class="next">&#8250;</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          <!-- END PAGINATION -->
+          
       </section>
       <!-- END CONTENT -->
       

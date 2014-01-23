@@ -43,11 +43,36 @@
               <td>{% T Invoice %} #{{invoice.InvoiceNumber}} - {{invoice.CreatedOn | Date: 'D'}} - <strong>{{ invoice.TotalAmount | FormatDecimal format: '0.00' }} {{ data.Business.Currency.Code }}</strong></td>
               <td>
                 <div class=" pull-right">
-                  {% if data.Local.PayPalEnabled %}
+                  
+				  {% if data.Setting_Paypal_EnableSubscriptions %}
+					  {% if data.Coworker.HasSetupRegularPayments == false %}
+						<a href="{% Url Payments, SetRegularPayment, Id: invoice.Id %}" class="btn btn-orange"><span aria-hidden="true" class="icon i-16 icon-redo"></span>{% T Setup regular payments %}</a>
+					  {% endif %}
+				  {% endif %}
+                  {% if data.Setting_AuthorizeNet_EnableSubscriptions %}
+                  	{% if data.Coworker.HasSetupRegularPayments == false %}
+                  		<a class="btn btn-orange ccPayButton" data-description="{% T Invoice %} #{{invoice.InvoiceNumber}}" data-payUrl="{% Url Invoices, Pay, Id: invoice.Id, provider: 'authorizeNetSubscription' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-redo"></span>{% T Setup regular payments %}</a>
+                  	{% endif %}
+                  {% endif %}
+				  {% if data.Local.PayPalEnabled %}
                   <a class="btn btn-orange" href="{% Url Invoices, Pay, Id: invoice.Id, provider: 'PayPal' %}"><span aria-hidden="true" class="icon i-16 icon-paypal"></span> {% T Pay by PayPal %}</a>
                   {% endif %}
+                  {% if data.Local.AdyenEnabled %}
+                  <a class="btn btn-orange" href="{% Url Invoices, Pay, Id: invoice.Id, provider: 'Adyen' %}"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  {% endif %}
                   {% if data.Local.StripeEnabled %}
-                  <a class="btn btn-orange stripePayButton" data-description="Invoice #{{invoice.InvoiceNumber}}" data-amount="{{ invoice.TotalAmount | Times: 100 }}" data-payUrl="{% Url Invoices, Pay, Id: invoice.Id, provider: 'Stripe' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  <a class="btn btn-orange stripePayButton" data-description="{% T Invoice %} #{{invoice.InvoiceNumber}}" data-amount="{{ invoice.TransactionTotalAmount | Times: 100 | FormatDecimal: '0' }}" data-currency="{{ invoice.TransactionCurrency.Code }}" data-payUrl="{% Url Invoices, Pay, Id: invoice.Id, provider: 'Stripe' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  {% endif %}
+                  {% if data.Local.USAEPayEnabled %}
+                  <a class="btn btn-orange ccPayButton" data-description="{% T Invoice %} #{{invoice.InvoiceNumber}}" data-payUrl="{% Url Invoices, Pay, Id: invoice.Id, provider: 'usaEPay' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  {% endif %}
+                  {% if data.Local.SpreedlyEnabled %}
+                  <a class="btn btn-orange spreedlyButton" data-description="{% T Invoice %} #{{invoice.InvoiceNumber}}" data-payUrl="https://{{ data.Domain }}/{{ data.Language }}/payments/SpreedlyPaymentToken/{{ invoice.Id }}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  {% endif %}
+                  {% if data.Setting_AuthorizeNet_Enabled %}
+                  	{% if data.Coworker.HasSetupRegularPayments == false %}
+                  		<a class="btn btn-orange ccPayButton" data-description="{% T Invoice %} #{{invoice.InvoiceNumber}}" data-payUrl="{% Url Invoices, Pay, Id: invoice.Id, provider: 'authorizeNetDirect' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Pay by Card %}</a>
+                  	{% endif %}
                   {% endif %}
                 </div>
               </td>
@@ -75,18 +100,174 @@
             {% endfor %}
           </tbody>
         </table>
+      
+        {% if data.Local.CurrentBalance > 0 %}
+        <h3>{% T Account Credit %}</h3>
+        <table class="table table-hover invoices">
+          <tbody>
+            <tr>
+              <td style="width:1%"><span aria-hidden="true" class="icon i-16 icon-star"></span></td>
+              <td>
+                {% T You account has a current balance of: %}
+                <strong>
+                  {{ data.Local.CurrentBalance | FormatDecimal: '0.00' }}
+                  {{ data.Business.Currency.Code }}
+                </strong>
+              </td>
+              <td>&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+        {% endif %}
+      
       </section>
       <!-- END CONTENT -->
       
     </div>
   </div>
   <!-- END CONTAINER -->
+  <style>
+    #ccdialog, #spreedly {
+      width: 300px;
+      margin-left: -150px;
+    }
+    #ccdialog .modal-header,
+    #spreedly .modal-header{
+      background: #f1f4f6;
+      padding: 25px;
+    }
+    #ccdialog .controls label,
+    #spreedly .controls label { margin-bottom:0; }
+    
+    #ccdialog h4,
+    #spreedly h4
+    { margin-bottom: 5px; }
+    
+    .invoiceNumber { color: #929496; }
+  </style>
+  <!-- CREDIT CARD DETAILS -->
+  <div id="ccdialog" class="modal hide fade row-fluid" tabindex="-1" role="dialog" aria-hidden="true">
+    <form method="post" id="ccform">
+      <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">&times;</a>
+        <h4>{{ data.Business.Name }}</h4>
+        <span class="invoiceNumber"></span>
+      </div>
+      <div class="modal-body">
+        
+        <div class="controls controls-row">
+          <label class="span8">{% T Card Number %}</label>
+          <label class="span4">{% T Expires %}</label>
+      </div>
+      <div class="controls controls-row">
+        <input type="hidden" name="configuration[0].key" value="CardNumber" />
+        <input type="hidden" name="configuration[1].key" value="CardExpMonth" />
+        <input type="hidden" name="configuration[2].key" value="CardExpYear" />
+        <input type="hidden" name="configuration[3].key" value="CardHolder" />
+        <input type="hidden" name="configuration[4].key" value="cvv2" />
+        
+        <input autocomplete="off" name="configuration[0].value" class="span8" type="text" placeholder="???? ???? ???? ????">
+        <input autocomplete="off" name="configuration[1].value" class="span2" type="text" placeholder="MM">
+        <input autocomplete="off" name="configuration[2].value" class="span2" type="text" placeholder="YY">
+      </div>
+      <div class="controls controls-row">
+        <label class="span8">{% T Name on Card %}</label>
+        <label class="span4">{% T CVC %}</label>
+      </div>
+      <div class="controls controls-row">
+        <input autocomplete="off" name="configuration[3].value" value="{{ data.Coworker.BillName }}" class="span8" type="text" placeholder="">
+        <input autocomplete="off" name="configuration[4].value" class="span4" type="text" placeholder="CVC">
+        
+      </div>
+      
+      </div>
+      <div class="modal-footer">
+        <a class="btn  btn-grey" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>
+        <a href="#" id="ccpay-button" class="btn btn-orange">{% T Pay by Card %}</a>
+      </div>
+    </form>
+  </div>
+  <!-- END CREDIT CARD DETAILS -->
   
+   <!-- SPREEDLY CREDIT CARD DETAILS -->
+  <div id="spreedly" class="modal hide fade row-fluid" tabindex="-1" role="dialog" aria-hidden="true">
+    <form method="post" action="https://core.spreedly.com/v1/payment_methods" id="spreedly-ccform">
+      <input name="redirect_url" id="spreedly-redirect-url" type="hidden" value="" />
+      <input name="environment_key" type="hidden" value="{{ data.Local.SpreedlyEnvironmentKey }}" />
+      <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">&times;</a>
+        <h4>{{ data.Business.Name }}</h4>
+        <span class="invoiceNumber"></span>
+      </div>
+      <div class="modal-body">
+
+        
+        <div class="controls controls-row">
+          <label class="span7">{% T Card Number %}</label>
+          <label class="span5">{% T Expires %}</label>
+        </div>
+        <div class="controls controls-row">
+          <input class="span7" autocomplete="off" id="credit_card_number" name="credit_card[number]" type="text" placeholder="???? ???? ???? ????" />
+          <input class="span2" id="credit_card_month" name="credit_card[month]" type="text" placeholder="MM" />
+          <input class="span3" id="credit_card_year" name="credit_card[year]" type="text" placeholder="YYYY"/>
+        </div>
+        <div class="controls controls-row">
+          <label class="span9">{% T Name on Card %}</label>
+          <label class="span3">{% T CVC %}</label>
+        </div>
+        <div class="controls controls-row">
+          <input class="span4" id="credit_card_first_name" name="credit_card[first_name]" type="text" placeholder="{% T First name %}" />
+          <input class="span5" id="credit_card_last_name" name="credit_card[last_name]" type="text" placeholder="{% T Last name %}"/>
+          <input class="span3" autocomplete="off" id="credit_card_verification_value" name="credit_card[verification_value]" type="text" />
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <a class="btn  btn-grey" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>
+        <a href="#" id="spreedly-ccpay-button" class="btn btn-orange">{% T Pay by Card %}</a>
+      </div>
+    </form>
+  </div>
+  <!-- END CREDIT CARD DETAILS -->
   
 </div>
 {% endblock %}
 
 {% block script %}
+<script>
+    $(function () {
+        $('.ccPayButton').click(function () {
+            var el = $('#ccdialog');
+            var invoiceNumber = $(this).attr('data-description');
+            var url = $(this).attr('data-payUrl');
+
+            $('#ccform').attr('action', url);
+            $('.invoiceNumber').text(invoiceNumber);
+            el.modal();
+        });
+
+        $('.spreedlyButton').click(function () {
+            var el = $('#spreedly');
+            var invoiceNumber = $(this).attr('data-description');
+            var url = $(this).attr('data-payUrl');
+            $('#spreedly-redirect-url').val(url);
+            $('.invoiceNumber').text(invoiceNumber);
+            el.modal();
+        });
+
+        $('#spreedly-ccpay-button').click(function () {
+            if ($('#spreedly-ccpay-button').attr('disabled')) return;
+            $('#spreedly-ccpay-button').attr('disabled', 'disabled');
+            $('#spreedly-ccform').submit();
+        });
+
+        $('#ccpay-button').click(function () {
+            if ($('#ccpay-button').attr('disabled')) return;
+            $('#ccpay-button').attr('disabled', 'disabled');
+            $('#ccform').submit();
+        });
+    });
+</script>
 {% if data.Local.StripeEnabled %}
 <script src="https://checkout.stripe.com/v2/checkout.js"></script>
 <script>
@@ -102,7 +283,7 @@
             key: '{{ data.Local.StripePublicKey }}',
             address: true,
             amount: el.attr('data-amount'),
-            currency: '{{ data.Business.Currency.Code }}',
+            currency: el.attr('data-currency'),
             name: '{{ data.Business.Name }}',
             description: el.attr('data-description'),
             panelLabel: 'Checkout',

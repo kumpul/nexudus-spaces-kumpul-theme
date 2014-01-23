@@ -28,7 +28,8 @@
               {% if data.Setting_PublicWebSite_Help %}
               <li class="{%if data.Controller == 'support'%}active{%endif%}" ><a role="menuitem" tabindex="-1" href="{% Url Support, Index %}">{% T Help %}</a></li>
               {% endif %}
-              <li class="{%if data.Controller == 'bookings'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Bookings, Index %}">{% T Events & Bookings %}</a></li>
+              <li class="{%if data.Controller == 'events'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Events, Index %}">{% T Events %}</a></li>
+              <li class="{%if data.Controller == 'bookings'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Bookings, Index %}">{% T Bookings %}</a></li>
               <li class="{%if data.Controller == 'directory'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Directory, Index %}">{% T Directory %}</a></li>
               {% if data.Resources.size > 0 %}  
               <li class="divider"></li>  

@@ -7,7 +7,7 @@
     <ul class="breadcrumb">
       <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
       <li class="active">{% T Space resources %}</li>
-
+      
     </ul>
     <!-- END BREADCRUMB -->
     <div class="row">
@@ -20,76 +20,91 @@
           
           <!-- POST CONTENT -->
           <div class="body-content">
-            {% if resource.HasImage %}
-            <a href="{% Url PublicResources, Details, id: resource.Id, name: resource.Name | Clean %}" class="thumbnail pull-left">
-              <img data-large-image="{% Url PublicResources, GetImage, id: resource.Id, h: 800, w: 800 %}" src="{% Url PublicResources, GetImage, id: resource.Id, h: 140, w: 140 %}" alt="{{ resource.Name }}" class="entry-image" />
-            </a>
-            {% endif %}
-            <p>
-              {{ resource.Description }}
-            </p>
-            <p>
-              <a href="{% Url PublicResources, Details, id: resource.Id, name: resource.Name | Clean %}">{% T View more details %}</a>
-            </p>
-            <p class="resource_features">
-              {% if resource.Allocation > 0 %}
-              <span class="btn btn-grey">
-                <strong>{{resource.Allocation}}</strong>
-                <span aria-hidden="true" class="icon i-16 icon-user"></span>
-              </span>
-              {% endif %}
-              {% if resource.Projector %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Projector %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-camera-2"></span></span>
-              {% endif %}
-              {% if resource.Internet %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Internet %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-globe"></span></span>
-              {% endif %}
-              {% if resource.ConferencePhone %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Conference phone %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tree"></span></span>
-              {% endif %}
-              {% if resource.StandardPhone %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Phone %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-phone"></span></span>
-              {% endif %}
-              {% if resource.WhiteBoard %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Whiteboard / flipboard %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-signup"></span></span>
-              {% endif %}
-              {% if resource.LargeDisplay %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Large display %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-screen"></span></span>
-              {% endif %}
-              {% if resource.Catering %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Catering %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-food"></span></span>
-              {% endif %}
-              {% if resource.TeaAndCoffee %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Tea and coffee %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-mug"></span></span>
-              {% endif %}
-              {% if resource.Drinks %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Drinks %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-glass"></span></span>
-              {% endif %}
-              {% if resource.SecurityLock %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Lock %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-lock"></span></span>
-              {% endif %}
-              {% if resource.CCTV %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T CCTV %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-camera-2"></span></span>
-              {% endif %}
-              {% if resource.VoiceRecorder %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Voice recorder %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-radio-checked"></span></span>
-              {% endif %}
-              {% if resource.AirConditioning %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Air conditioning %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-dashboard"></span></span>
-              {% endif %}
-              {% if resource.Heating %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Heating %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-dashboard"></span></span>
-              {% endif %}
-              {% if resource.NaturalLight %}
-              <span data-toggle="popover" data-placement="top" data-content="{% T Natural light %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-brightness-medium"></span></span>
-              {% endif %}
-            </p>
+            <div class="row">
+              <div class="span2">
+                {% if resource.HasImage %}
+                <a href="{% Url PublicResources, Details, id: resource.Id, name: resource.Name | Clean %}" class="thumbnail pull-left">
+                  <img style="width: 100%" data-large-image="{% Url PublicResources, GetImage, id: resource.Id, h: 800, w: 800 %}" src="{% Url PublicResources, GetImage, id: resource.Id, h: 200, w: 200 %}" alt="{{ resource.Name }}" class="entry-image" />
+                </a>
+                <div class="clearfix"></div>
+                {% endif %}  
+              </div>
+              <div class="{% if resource.HasImage %}span7{% else %}span12{% endif %}">
+                <p>{{ resource.Description }}</p>
+                <p>
+                  <a href="{% Url PublicResources, Details, id: resource.Id, name: resource.Name | Clean %}">{% T View more details  %}</a>
+                  |
+                  <a href="javascript: window.prompt('{{ resource.Name }}. Calendar URL:','http://{{ data.Domain }}{% Url Feeds, ResourceBookings, guid: resource.UniqueId %}'); return false;">{% T Calendar Feed %}</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span9">
+              <p class="resource_features">
+                {% if resource.Allocation > 0 %}
+                <span class="btn btn-grey">
+                  <strong>{{resource.Allocation}}</strong>
+                  <span aria-hidden="true" class="icon i-16 icon-user"></span>
+                </span>
+                {% endif %}
+                {% if resource.Projector %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Projector %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-camera-2"></span></span>
+                {% endif %}
+                {% if resource.Internet %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Internet %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-globe"></span></span>
+                {% endif %}
+                {% if resource.ConferencePhone %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Conference phone %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tree"></span></span>
+                {% endif %}
+                {% if resource.StandardPhone %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Phone %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-phone"></span></span>
+                {% endif %}
+                {% if resource.WhiteBoard %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Whiteboard / flipboard %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-signup"></span></span>
+                {% endif %}
+                {% if resource.LargeDisplay %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Large display %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-screen"></span></span>
+                {% endif %}
+                {% if resource.Catering %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Catering %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-food"></span></span>
+                {% endif %}
+                {% if resource.TeaAndCoffee %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Tea and coffee %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-mug"></span></span>
+                {% endif %}
+                {% if resource.Drinks %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Drinks %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-glass"></span></span>
+                {% endif %}
+                {% if resource.SecurityLock %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Lock %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-lock"></span></span>
+                {% endif %}
+                {% if resource.CCTV %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T CCTV %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-camera-2"></span></span>
+                {% endif %}
+                {% if resource.VoiceRecorder %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Voice recorder %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-radio-checked"></span></span>
+                {% endif %}
+                {% if resource.AirConditioning %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Air conditioning %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-dashboard"></span></span>
+                {% endif %}
+                {% if resource.Heating %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Heating %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-dashboard"></span></span>
+                {% endif %}
+                {% if resource.NaturalLight %}
+                <span data-toggle="popover" data-placement="top" data-content="{% T Natural light %}" data-trigger="hover" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-brightness-medium"></span></span>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span9">
               <div class="well text-center">
-              {% if data.Coworker != null %}    
-              <a href="#" onclick="$('#Booking_Resource').val({{ resource.Id }});createBooking(new Date());return false;" class="btn btn-orange">{% T Make a booking %}</a>
-              {% else %}
-              <a href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url PublicResources, Details, id: resource.Id, name: resource.Name | Clean %}" class="btn btn-orange">{% T Login to make a booking %}</a>
-              {% endif %}
+                {% if data.Coworker != null %}    
+                <a href="#" onclick="$('#Booking_Resource').val({{ resource.Id }});createBooking(new Date());return false;" class="btn btn-orange">{% T Make a booking %}</a>
+                {% else %}
+                <a href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url PublicResources, Details, id: resource.Id, name: resource.Name | Clean %}" class="btn btn-orange">{% T Login to make a booking %}</a>
+                {% endif %}
+              </div>
             </div>
           </div>
           <!-- END POST CONTENT -->

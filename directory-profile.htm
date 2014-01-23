@@ -47,7 +47,7 @@
               <div class="skills">
                 <h3>{% T Contact details %}</h3>
                 {% if data.Local.Coworker.ProfileWebsite.size > 0 %}
-                <a target="_blank" href="http://{{ data.Local.Coworker.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
+                <a target="_blank" href="{{ data.Local.Coworker.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
                 {% endif %}
                 {% if data.Local.Coworker.Twitter.size > 0 %}
                 <a target="_blank" href="http://twitter.com/{{ data.Local.Coworker.Twitter }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-twitter"></span></a>
@@ -56,7 +56,7 @@
                 <a target="_blank" href="{{ data.Local.Coworker.Linkedin }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-linkedin"></span></a>
                 {% endif %}
                 {% if data.Local.Coworker.Facebook.size > 0 %}
-                <a target="_blank" href="https://www.facebook.com/{{ data.Local.Coworker.Facebook }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-facebook"></span></a>
+                <a target="_blank" href="{{ data.Local.Coworker.Facebook }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-facebook"></span></a>
                 {% endif %}
                 {% if data.Local.Coworker.Skype.size > 0 %}
                 <a href="callto://{{ data.Local.Coworker.Skype }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-skype"></span></a>

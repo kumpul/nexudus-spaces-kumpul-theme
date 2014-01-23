@@ -12,7 +12,7 @@
     <!-- END BREADCRUMB -->
     <div class="row">
       
-      <h2 class="page-title span12">Allowances</h2>
+      <h2 class="page-title span12">{% T Allowances %}</h2>
       
       <!-- CONTENT -->
       <section id="content" class="span12">
@@ -20,6 +20,53 @@
         <h3>
           {% T You are not signed up for a price plan or your price plan doesn't include any allowances %}
         </h3>
+        {% endif %}
+               
+        {% if data.Local.TariffHasLimits %}
+        <h3>{% T Access to {0} || data.Business.Name %}</h3>
+        
+        {% if data.Coworker.Tariff.CheckinPricePlanLimit > 0 %}
+        <span>
+          {% T Used {0} check-ins out of {1} || data.Local.CheckinsPlan || data.Coworker.Tariff.CheckinPricePlanLimit }} %}
+        </span>
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Local.CheckinsLeftPlan }}%;"></div>  
+        </div>
+        {% endif %}
+        
+        {% if data.Coworker.Tariff.HoursPricePlanLimit > 0 %}
+        {% T Used {0} minutes out of {1} hours || data.Local.MinutesPlan || data.Coworker.Tariff.HoursPricePlanLimit }} %}
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Local.MinutesLeftPlan }}%;"></div>
+        </div>
+        {% endif %}
+        
+        {% if data.Coworker.Tariff.CheckinWeekLimit > 0 %}
+        {% T Used {0} check-ins out of {1} this week || data.Local.CheckinsThisWeek || data.Coworker.Tariff.CheckinWeekLimit }} %}
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Local.CheckinsLeftWeek }}%;"></div>
+        </div>
+        {% endif %}
+        
+        {% if data.Coworker.Tariff.HoursWeekLimit > 0 %}
+        {% T Used {0} minutes out of {1} hours this week || data.Local.MinutesThisWeek || data.Coworker.Tariff.HoursWeekLimit }} %}
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Local.MinutesLeftWeek }}%;"></div>
+        </div>
+        {% endif %}
+        {% if data.Coworker.Tariff.CheckinMonthLimit > 0 %}
+        {% T Used {0} check-ins out of {1} this month || data.Local.CheckinsThisMonth || data.Coworker.Tariff.CheckinMonthLimit }} %}
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Local.CheckinsLeftMonth }}%;"></div>
+        </div>
+        {% endif %}
+        {% if data.Coworker.Tariff.HoursMonthLimit > 0 %}
+        {% T Used {0} minutes out of {1} hours this month || data.Local.MinutesThisMonth || data.Coworker.Tariff.HoursMonthLimit }} %}
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Local.MinutesLeftMonth }}%;"></div>
+        </div>
+        {% endif %}
+        
         {% endif %}
         
         {% if data.Coworker.TimePasses.size > 0 %}
