@@ -242,8 +242,8 @@
         });
                
         //Initialize timepickers
-        $('#Booking_From').datetimepicker({pickSeconds: false});
-        $('#Booking_To').datetimepicker({pickSeconds: false, pickDate: false});
+        $('#Booking_From').datetimepicker({pickSeconds: false, pick12HourFormat: true});
+        $('#Booking_To').datetimepicker({pickSeconds: false, pickDate: false, pick12HourFormat: true});
                
         //If todate is > from date, move to date ahead
         $('#Booking_From').on('changeDate', function(){

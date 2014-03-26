@@ -16,7 +16,13 @@
       
       <!-- CONTENT -->
       <section id="content" class="span12">
-        
+
+        {% if data.Coworker.Active == false %}
+        <div class="alert alert-error text-center">
+          <b>{% T Your account is currently on hold. Contact us for more information %}</b>
+        </div>
+        {% endif %}
+
         {% if data.Coworker.Tariff.Id != data.Coworker.NextTariff.Id %}
         <div class="alert alert-warning text-center">
           <h4>{% T Your price plan is about to change. %}</h4>
@@ -74,20 +80,20 @@
               {% elseif field.FieldType == 'LongText' %}
               <div class="span12">
                 <label>{% T field.Name %}</label>
-                <textarea id="Textarea1" name="Coworker.{{ customFieldName }}" class="span12">{{data.Coworker[customFieldName]}}</textarea>
+                <textarea id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}" class="span12">{{data.Coworker[customFieldName]}}</textarea>
               </div>
               {% elseif field.FieldType == 'Boolean' %}
               <div class="span12">
                 <label class="checkbox">
-                  <input id="Checkbox1" name="Coworker.{{ customFieldName }}" type="checkbox" {% if data.Coworker[customFieldName] == 'true' %}checked="checked"{% endif %} value="true" >
-                  <input id="Hidden1" name="Coworker.{{ customFieldName }}" type="hidden" value="false">
+                  <input id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}" type="checkbox" {% if data.Coworker[customFieldName] == 'true' %}checked="checked"{% endif %} value="true" >
+                  <input id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}" type="hidden" value="false">
                   {% T field.Name %}
                 </label>
               </div>
               {% elseif field.FieldType == 'Dropdown' %}
               <div class="span12">
                 <label>{% T field.Name %}</label>
-                <select id="Select1" name="Coworker.{{ customFieldName }}" class="span12">
+                <select id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}" class="span12">
                   <option></option>
                   {% for opt in field.AvailableOptionArray %}
                   <option {% if opt == {{data.Coworker[customFieldName]}} %}selected="selected"{% endif %}>{{opt}}</option>
@@ -98,7 +104,7 @@
               <div class="span12">
                 <label>{% T field.Name %}</label>
                 <div class="input-append date">
-                  <input data-format="yyyy-MM-dd hh:mm" type="text" id="Text1" name="Coworker.{{ customFieldName }}"  />
+                  <input data-format="yyyy-MM-dd hh:mm" type="text" id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}"  />
                   <span class="add-on"> 
                     <i data-time-icon="icon-time" data-date-icon="icon-calendar">
                     </i>
@@ -188,19 +194,19 @@
             <div class="row-fluid">
               <div class="span3">
                 <label>Twitter</label>
-                <input value="{{ data.Coworker.Twitter }}" type="text" name="Coworker.Twitter" id="Coworker_Twitter" class="span12">
+                <input value="{{ data.Coworker.Twitter }}" type="text" name="Coworker.Twitter" id="Coworker_Twitter" class="span12" placeholder="@twitter">
               </div>
               <div class="span3">
                 <label>Facebook</label>
-                <input value="{{ data.Coworker.Facebook }}" type="text" name="Coworker.Facebook" id="Coworker_Facebook" class="span12">
+                <input value="{{ data.Coworker.Facebook }}" type="text" name="Coworker.Facebook" id="Coworker_Facebook" class="span12" placeholder="https://www.facebook.com/zuck">
               </div>
               <div class="span3">
                 <label>Linkedin</label>
-                <input value="{{ data.Coworker.Linkedin }}" type="text" name="Coworker.Linkedin" id="Coworker_Linkedin" class="span12">
+                <input value="{{ data.Coworker.Linkedin }}" type="text" name="Coworker.Linkedin" id="Coworker_Linkedin" class="span12" placeholder="http://www.linkedin.com/in/jeffweiner08">
               </div>
               <div class="span3">
                 <label>Skype</label>
-                <input value="{{ data.Coworker.Skype }}" type="text" name="Coworker.Skype" id="Coworker_Skype" class="span12">
+                <input value="{{ data.Coworker.Skype }}" type="text" name="Coworker.Skype" id="Coworker_Skype" class="span12" placeholder="skype">
               </div>
             </div>
             <div class="row-fluid">

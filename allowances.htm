@@ -104,12 +104,22 @@
         </table>
         {% endif %}
         <!-- TIME PASSES END -->
-        {% if data.Coworker.ExtraServices.size > 0 %}
+        {% if data.Coworker.ExtraServices.size > 0 or data.Coworker.TotalRemainingBookingCredit > 0 %}
         <h3>{% T Access to resources at {0} || data.Business.Name %}</h3>
         <div class="alert alert-info">
           {% T The tokens below give you access to book a resource in the space. Some resources are charged  based on the time you used them, some based on the times you used them. %}
         </div>
+       
+        {% if data.Coworker.TotalRemainingBookingCredit > 0 %}
+        <span>
+          {% T Left {0:0.00} credit out of {1:0.00} || data.Coworker.TotalRemainingBookingCredit || data.Coworker.TotalTotalBookingCredit  }} %}
+        </span>
+        <div class="progress progress-striped">
+          <div class="bar" style="width: {{ data.Coworker.BookingCreditPercent }}%;"></div>  
+        </div>
+        {% endif %}
         
+        {% if data.Coworker.ExtraServices.size > 0 %}
         <table class="table table-hover invoices">
           <tbody>
             {% for xs in data.Coworker.ExtraServices %}
@@ -143,6 +153,7 @@
             {% endfor %}
           </tbody>
         </table>
+        {% endif %}
         <p>
         <a href="{% Url Bookings, Index %}" class="btn btn-orange">{% T Make a booking %}</a>
         </p>

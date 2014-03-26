@@ -1,5 +1,10 @@
 {% extends master.master %}
 {% block content %}
+{% if data.Local.ShowCheckInMembers and data.Local.CheckedIn == false  %}
+<style>
+  .checkedin img { border-color: green !important; }
+</style>
+{% endif %}
 <div id="wrapper">
   <!-- CONTAINER -->
   <div id="main" class="container">
@@ -16,7 +21,10 @@
       <section id="content" class="span12">
         <!-- FILTER -->
         <div class="filter well well-large">
-          {% if data.Local.Tag %}
+          {% if data.Local.ShowCheckInMembers and data.Local.CheckedIn == false %}
+          <a href="{% Url Directory, Index, checkedin: 'true' %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-power-cord"></span> {% T View members in the space right now %}</a>
+          {% endif %}
+          {% if data.Local.Tag or data.Local.CheckedIn %}
           <a href="{% Url Directory, Index %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {% T View all %}</a>
           {% endif %}
           {% for tag in data.Local.AllTags %}
@@ -28,7 +36,7 @@
         <div class="row">
           {% for member in data.Local.Coworkers %}
           <!-- member -->
-          <div class="member_block span3 text-center">
+          <div class="member_block span3 text-center {% if member.CheckedIn %}checkedin{% endif %}">
             <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="user_avatar">
               {% if member.HasAvatar %}
               <img class="img-circle" height="140" width="140" src="{% Url Coworker, GetAvatar, id: member.Id, h:140, w:140 %}" alt="{{ member.FullName | Capitalize }}" >          
@@ -38,7 +46,7 @@
             </a>
             <h4 class="subheader">{{ member.FullName | Capitalize }}</h4>
             {% if member.ProfileWebsite.size > 0 %}
-              <a target="_blank" href="http://{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
+              <a target="_blank" href="{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
             {% else %}
               <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
             {% endif %}

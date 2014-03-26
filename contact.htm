@@ -8,6 +8,7 @@
       <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
       <li class="active">{% T Contact %}</li>
     </ul>
+
     <!-- END BREADCRUMB -->
     <div class="row">
       
@@ -135,7 +136,7 @@
     }
   
     function codeAddress() {
-        var address = '{{data.Business.Address | Replace: '\n', ' ' | Replace: '\r', ''}}';
+        var address = "{{data.Business.Address | Replace: '\n', ' ' | Replace: '\r', ''}}";
         geocoder.geocode( { 'address': address}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 map.setCenter(results[0].geometry.location);

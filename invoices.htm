@@ -31,8 +31,9 @@
         <h3>{% T Pending payments %}</h3>
         {% if  data.Local.UnPaidInvoices.size == 0 %}
         <div class="alert alert-success">
-          {% T You don't have any pending payments %}
+            {% T You don't have any pending payments %}
         </div>
+
         {% endif %}
         
         <table class="table table-hover invoices">
@@ -80,6 +81,18 @@
             {% endfor %}
           </tbody>
         </table>
+        
+        {% if data.Local.SpreedlyEnabled %}
+        <a class="btn btn-orange spreedlyButton pull-right" data-payButtonText="{% T Update Payment Details %}" data-payUrl="https://{{ data.Domain }}/{{ data.Language }}/payments/SpreedlyPaymentToken/0" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Update Payment Details %}</a>
+        <br/>
+        <br/>
+        {% endif %}
+        
+        {% if data.Setting_AuthorizeNet_EnableSubscriptions %}
+        <a class="btn btn-orange ccPayButton pull-right" data-description="{% T Update Payment Details %}" data-payUrl="{% Url Invoices, StoreCard, provider: 'authorizeNetSubscription' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Update Payment Details %}</a>
+        <br/>
+        <br/>
+        {% endif %}
         
         <h3>{% T Completed payments %}</h3>
         <table class="table table-hover invoices">
@@ -240,7 +253,6 @@
             var el = $('#ccdialog');
             var invoiceNumber = $(this).attr('data-description');
             var url = $(this).attr('data-payUrl');
-
             $('#ccform').attr('action', url);
             $('.invoiceNumber').text(invoiceNumber);
             el.modal();
@@ -250,7 +262,9 @@
             var el = $('#spreedly');
             var invoiceNumber = $(this).attr('data-description');
             var url = $(this).attr('data-payUrl');
+            var txt = $(this).attr('data-payButtonText') || '{% T Pay by Card %}';
             $('#spreedly-redirect-url').val(url);
+            $('#spreedly-ccpay-button').text(txt);
             $('.invoiceNumber').text(invoiceNumber);
             el.modal();
         });

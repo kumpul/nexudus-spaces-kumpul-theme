@@ -283,7 +283,7 @@
           </h4>
           <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-user"></span></a>
           {% if member.ProfileWebsite.size > 0 %}
-          <a target="_blank" href="http://{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
+          <a target="_blank" href="{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
           {% endif %}
           {% if member.Twitter.size > 0 %}
           <a target="_blank" href="http://twitter.com/{{ member.Twitter }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-twitter"></span></a>

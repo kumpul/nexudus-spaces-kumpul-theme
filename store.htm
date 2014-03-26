@@ -1,0 +1,116 @@
+{% extends master.master %}
+{% block content %}
+<div id="wrapper">
+  <!-- CONTAINER -->
+  <div id="main" class="container">
+    <div class="row">
+      
+      <h2 class="page-title span12">{% T Additional Products %}</h2>
+      
+      <!-- CONTENT -->
+      <section id="content" class="span12">
+        
+        <div class="body-content">
+          
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="span8">Product</th>
+                <th class="span1">Price</th>
+                <th class="span1">Qty.</th>
+                <th class="span2" style="white-space: nowrap;">{% T Add To My Plan %}</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: products">
+              <tr>
+                <td><span data-bind="text: Name"></span><br/>
+                  <small data-bind="text: Description"></small>
+                </td>
+                <td><span data-bind="text: PriceFormatted"></span></td>
+                <td>
+                  <select style="width:50px" data-bind="value: Quantity, optionsCaption: '', options: $root.qtys"></select>
+                </td>
+                <td class="text-center">
+                  <input data-bind="checked: RegularCharge" type="checkbox" {% if data.Coworker.Tariff == null %}disabled="disabled"{% endif %} />
+                </td>
+              </tr>
+              
+            </tbody>
+          </table>
+          <table class="table" style="border-top: 1px solid black">
+            <tbody>
+              <tr>
+                <th class="span9"><p class="text-right">{% T One-off Payment: %}</p></th>
+                <th class="span3"><span data-bind="text: totalOneOff"></span></th>
+              </tr>
+              <tr>
+                <th class="span9 text-right"><p class="text-right">{% T Added to your price plan: %}</p></th>
+                <th class="span3"> <span data-bind="text: totalTariff"></span></th>
+              </tr>
+            </tbody>
+            
+          </table>
+          <div class="pull-right">
+            <button class="btn btn-orange" data-bind="attr: { disabled: selectedProducts().length == 0 }, click: confirmPurchase">{% T Continue %}</button>
+          </div>
+        </div>
+        
+      </section>
+      <!-- END CONTENT -->
+      
+      <!-- CONFIRM PURCHASE MODAL -->
+      <div class="modal hide fade" data-bind="showModal: showConfirmation">
+        <div class="modal-header">
+          <button type="button" class="close" aria-hidden="true" data-bind="click: closeConfirmation">&times;</button>
+          <h3>{% T Confirm your Purchase %}</h3>
+        </div>
+        <div class="modal-body">
+          <form action="#">
+            <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="span10">Product</th>
+                <th class="span2">Price</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: selectedProducts">
+              <tr>
+                <td><span data-bind="text: Name"></span></td>
+                <td>
+                  <span data-bind="text: Quantity"></span>x 
+                  <span data-bind="text: PriceFormatted"></span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+            <table class="table" style="border-top: 1px solid black">
+              <tbody>
+                <tr>
+                  <th class="span10"><p class="text-right">{% T One-off Payment: %}</p></th>
+                  <th class="span2"><span data-bind="text: totalOneOff"></span></th>
+                </tr>
+                <tr>
+                  <th class="span10 text-right"><p class="text-right">{% T Added to your price plan: %}</p></th>
+                  <th class="span2"> <span data-bind="text: totalTariff"></span></th>
+                </tr>
+              </tbody>
+              
+            </table>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-link" data-bind="click: closeConfirmation">{% T Cancel %}</a>
+          <a href="#" class="btn btn-orange" data-bind="click: doPurchase">{% T Continue %}</a>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <!-- END CONTAINER -->
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/content/themes/public/default/js/knockout-2.3.0.js"></script>
+<script type="text/javascript" src="/content/themes/public/default/js/knockout.mapping-latest.js"></script>
+<script type="text/javascript" src="/content/themes/public/default/js/store.js"></script>
+{% endblock %}
