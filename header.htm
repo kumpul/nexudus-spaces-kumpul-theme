@@ -66,12 +66,23 @@
               <li class="{%if data.Controller == 'bookings'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Bookings, Index, ShowAll: false %}">{% T My Bookings %}</a></li>
               <li class="{%if data.Action == 'tariff'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Profile, Tariff %}">{% T Price plans %}</a></li>
               <li class="{%if data.Controller == 'allowances'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Allowances, Index %}">{% T Allowances %}</a></li>
-              <li class="{%if data.Controller == 'store'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Store, Products %}">{% T Additional Products %}</a></li>
+              
+              <li class="{%if data.Controller == 'store'%}active{%endif%} {% if data.ProductTags.size > 0 %} dropdown-submenu {% endif %}">
+                <a role="menuitem" tabindex="-1" href="{% Url Store, Products %}">{% T Additional Products %}</a>
+                {% if data.ProductTags.size > 0 %}
+              	<ul class="dropdown-menu" role="menu">
+                  {% for tag in data.ProductTags %}
+                  <li><a role="menuitem" tabindex="-1" href="{% Url Store, Products %}?tag={{ tag }}">{{ tag }}</a></li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </li>
+              
               <li><a role="menuitem" tabindex="-1" href="{% Url Login, Logout %}">{% T Logout %}</a></li>
             </ul>
           </li>
           {% else %}
-          <li><a href="https://{{ data.Business.WebAddress }}.spaces.nexudus.com/{{ data.Language }}/profile">{% T My Account %}</a></li>
+          <li><a href="https://{{ data.Business.WebAddress }}.{{ data.PublicSiteSubDomain }}/{{ data.Language }}/profile">{% T My Account %}</a></li>
           {% endif %}
           {% endif %}
           {% if data.Languages.size > 1 %}
