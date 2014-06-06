@@ -71,7 +71,7 @@
             </ul>
           </li>
           {% else %}
-          <li><a href="{% Url Login, Index, lang: data.Language %}&returnUrl={% Url Profile, Index %}">{% T My Account %}</a></li>
+          <li><a href="https://{{ data.Business.WebAddress }}.spaces.nexudus.com/{{ data.Language }}/profile">{% T My Account %}</a></li>
           {% endif %}
           {% endif %}
           {% if data.Languages.size > 1 %}

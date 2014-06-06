@@ -78,32 +78,38 @@
         <thead>
           <tr id="header_row">
             <th class="quantity_th">
-              Quantity
+              {% T Quantity %}
             </th>
             <th class="details_notax_th">
-              Details
+              {% T Details %}
             </th>
             <th class="unitprice_th">
-              Unit Price
+              {% T Unit Price %}
             </th>
             <th class="subtotal_th">
-              Subtotal
+              {% T SubTotal %}
+            </th>
+            <th class="subtotal_th">
+              {% T Tax %}
             </th>
           </tr>
         </thead>
         <tfoot>
+          {% for taxCat in data.Local.Invoice.TaxCategories %}
           <tr id="">
             <td colspan="2">
               &nbsp;
             </td>
             <td colspan="1" class="total" id="total_currency">
-              Tax
-              (<span class="currency">{{ data.Local.Invoice.Currency.Code }}</span>)
+              {% T Tax %}
+              ({{ taxCat.Rate | FormatDecimal: '0.00' }}%)
             </td>
             <td class="total" id="total_amount">
-              {{ data.Local.Invoice.TaxAmount | FormatDecimal: '0.00' }}
+              {{ taxCat.TaxSubTotal | FormatDecimal: '0.00' }}
             </td>
+            <td>&nbsp;</td>
           </tr>
+          {% endfor %}
           <tr id="total_tr">
             <td colspan="2">
               &nbsp;
@@ -115,16 +121,18 @@
             <td class="total" id="Td2">
               {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
             </td>
+            <td>&nbsp;</td>
           </tr>
           {% if data.Local.Invoice.Paid  %}
           <tr id="settlement_tr">
             <td colspan="3" class="item_r">
-              Paid On
+              {% T Paid On %}
               {{ data.Local.Invoice.PaidOn | Date: 'D' }}
             </td>
             <td class="item_r">
               {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
             </td>
+            <td>&nbsp;</td>
           </tr>
           {% else %}
           <tr id="due_tr">
@@ -135,6 +143,7 @@
             <td class="total">
               {{ data.Local.Invoice.TotalAmount | FormatDecimal: '0.00' }}
             </td>
+            <td>&nbsp;</td>
           </tr>
           {% endif %}
         </tfoot>
@@ -153,30 +162,33 @@
             <td class="item_r subtotal_td">
               {{ line.SubTotal | FormatDecimal: '0.00' }}
             </td>
+            <td class="item_r subtotal_td">
+              {{ line.TaxPercentage | FormatDecimal: '0.00' }}%
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       <div id="payment-details">
         <h2>
-          Payment Details</h2>
+          {% T Payment Details %}</h2>
         <div id="bank_name">
           {{ data.Local.BankName }}
           
         </div>
         <div id="bank-code">
-          <strong>Bank Code</strong> 
+          <strong>{% T Bank Code %}</strong> 
           {{ data.Local.BankCode }} </div>
         
         <div id="sort-code">
-          <strong>Sort code</strong> 
+          <strong>{% T Sort code %}</strong> 
           {{ data.Local.SortCode }} </div>
         
         <div id="account-number">
-          <strong>Account Number:</strong> 
+          <strong>{% T Account Number %}</strong> 
           {{ data.Local.AccountNumber }} </div>
         <div id="payment-reference">
-          <strong>Payment reference:</strong> {{ data.Local.Invoice.InvoiceNumber }}</div>
+          <strong>{% T Payment reference %}</strong> {{ data.Local.Invoice.InvoiceNumber }}</div>
       </div>
           </div>
           <div class="clear"></div>

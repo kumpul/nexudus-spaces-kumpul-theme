@@ -95,7 +95,7 @@
                   <div class="span12">
                     <label>{% T field.Name %}</label>
                     <div class="input-append date">
-                      <input data-format="yyyy-MM-dd" type="text" id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}"  />
+                      <input id="Coworker_{{ customFieldName }}" data-format="yyyy-MM-dd" type="text" id="Coworker_{{ customFieldName }}" name="Coworker.{{ customFieldName }}"  />
                       <span class="add-on"> 
                         <i data-time-icon="icon-time" data-date-icon="icon-calendar">
                         </i>
@@ -122,16 +122,16 @@
                   </div>
                   <div class="row-fluid">
                       <div class="span3">
-                          <label>{% T Postcode / Zip code %}</label>
-                          <input value="{{ data.Coworker.PostCode }}" type="text" name="Coworker.PostCode" id="Coworker_PostCode" class="span12">
+                          <label>{% T State / Province %}</label>
+                          <input value="{{ data.Coworker.State }}" class="full-width" type="text" name="Coworker.State" id="Coworker_State" class="span12">            
                       </div>
                       <div class="span3">
                           <label>{% T Town %}</label>
                           <input value="{{ data.Coworker.CityName }}" class="full-width" type="text" name="Coworker.CityName" id="Coworker_CityName" class="span12">            
                       </div>
                       <div class="span3">
-                          <label>{% T State / Province %}</label>
-                          <input value="{{ data.Coworker.State }}" class="full-width" type="text" name="Coworker.State" id="Coworker_State" class="span12">            
+                          <label>{% T Postcode / Zip code %}</label>
+                          <input value="{{ data.Coworker.PostCode }}" type="text" name="Coworker.PostCode" id="Coworker_PostCode" class="span12">
                       </div>
                   </div>
               </div>

@@ -20,6 +20,8 @@
     <link rel="stylesheet" type="text/css" href="{% Url Css, Index %}"/>
     <link rel="stylesheet" type="text/css" href="/content/themes/public/default/css/css-responsive.css"/>
     <link rel="stylesheet" type="text/css" href="/content/themes/public/default/css/icons.css"/>
+    <link rel="stylesheet" type="text/css" href="/content/themes/public/default/js/chosen/chosen.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/content/themes/public/default/js/datetimepicker/css/bootstrap-datetimepicker.min.css" />
     
   </head>
   
@@ -34,9 +36,16 @@
     <script type="text/javascript" src="/content/themes/public/default/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/content/themes/public/default/js/fullcalendar.min.js"></script>
     <script type="text/javascript" src="/content/themes/public/default/js/gcal.js"></script>
-    <script type="text/javascript" src="/content/themes/public/default/js/app.js"></script>
-    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" src="/content/themes/public/default/js/app_v2.js"></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" src="/content/themes/public/default/js/chosen/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="/content/themes/public/default/js/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    {% if data.Language != 'en' %}
+    <script type="text/javascript" src="/content/themes/public/default/js/datetimepicker/js/locales/bootstrap-datetimepicker.{{ data.Language }}.js" charset="UTF-8"></script>
+    {% endif %}
     <!--[if lte IE 7]><script src="js/lte-ie7.js"></script><![endif]-->
+    <script type="text/javascript" src="/content/themes/public/default/js/knockout-2.3.0.js"></script>
+    <script type="text/javascript" src="/content/themes/public/default/js/knockout.mapping-latest.js"></script>
     
     <script>
         var flickrID = '{% Setting Social.Flickr %}';
@@ -75,7 +84,7 @@
             var $el = $('#modal_messages .alert');
             $el.removeClass().addClass('alert');
             $el.addClass('alert-' + cssClass);
-            $el.text(message);
+            $el.html(message);
             $('#modal_messages').modal('show')
         }
        

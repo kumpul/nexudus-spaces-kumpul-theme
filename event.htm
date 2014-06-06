@@ -18,7 +18,7 @@
           <h2 class="page-title"><a href="{% Url events, view, id: data.Local.Event.Id, title: data.Local.Event.Name | Clean %}">{{ data.Local.Event.Name }}</a></h2>
           <ul class="post-info">
             <li>
-              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="#">{{ data.Local.Event.StartDate | Date: 'D' }} {{ data.Local.Event.StartDate | Date: '@ h:mmtt' }}</a>
+              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="#">{{ data.Local.Event.StartDate | Date: 'D' }} @ {{ data.Local.Event.StartDate | Date: 'hh:mm tt' }}</a>
             </li>
             <li>
               <span aria-hidden="true" class="icon i-16 icon-bubble"></span> <a href="#comments">{% T {0} Comment(s) || data.Local.Event.Comments.size %}</a>
@@ -29,8 +29,7 @@
             <p>
               <img src="{% Url Events, GetLargeImage, id: data.Local.Event.Id, w: 870 %}" alt="{{ data.Local.Event.Name | StripHtml }}" />
             </p>
-            {% endif %}
-            {% if data.Local.Event.HasSmallImage %}
+            {% elseif data.Local.Event.HasSmallImage %}
             <a href="#" class="thumbnail pull-left">
               <img src="{% Url Events, GetSmallImage, id: data.Local.Event.Id, w: 200 %}">
             </a>
@@ -99,7 +98,8 @@
           </a>
           <div class="media-body">
             <form class="row-fluid" method="post" action="{% Url Events, NewComment %}">
-              {% AntiforgeryToken %}
+                {% AntiforgeryToken %}
+              <input type="hidden" id="id" name="id" required="required" value="{{ data.Local.Event.Id }}"> 
           	  <input type="hidden" id="title" name="title" required="required" value="{{ data.Local.Event.Name }}"> 
               <label for="message_messagetext">{% T Comment %}</label>
               <textarea type="text" class="span12" maxlength="2000" name="comment" id="comment" required="required">{{data.Local.Comment.Text}}</textarea>

@@ -989,3 +989,6 @@ footer{
     right: 5px;
     top: 5px;
   }
+  
+.timepicker-picker > table > tbody > tr:first-child { display: none !important; }
+.timepicker-picker > table > tbody > tr:last-child { display: none !important; }

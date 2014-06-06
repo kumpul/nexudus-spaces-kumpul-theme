@@ -21,20 +21,29 @@
       <section id="content" class="span12">
         <!-- FILTER -->
         <div class="filter well well-large">
+          <select style="width:100%" id="tag" onchange="window.location='{% Url Directory, Index, checkedin: data.Local.CheckedIn %}&tag=' + $('#tag').val()">
+            <option value=""> {% T View all %}</option>
+            {% for tag in data.Local.AllTags %}
+            <option value="{{tag}}" {% if data.Local.Tag == tag  %}selected="selected"{%endif%}> {{ tag | Capitalize }}</option>
+            {% endfor %}  
+          </select>
           {% if data.Local.ShowCheckInMembers and data.Local.CheckedIn == false %}
-          <a href="{% Url Directory, Index, checkedin: 'true' %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-power-cord"></span> {% T View members in the space right now %}</a>
+          <label>
+            <input type="checkbox" onclick="window.location='{% Url Directory, Index, checkedin: 'true' %}'">
+            <span style="vertical-align: sub;">{% T View members in the space right now %}</span>
+          </label>
           {% endif %}
-          {% if data.Local.Tag or data.Local.CheckedIn %}
-          <a href="{% Url Directory, Index %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {% T View all %}</a>
+          {% if data.Local.ShowCheckInMembers and data.Local.CheckedIn == true %}
+          <label>
+            <input type="checkbox" checked="checked" onclick="window.location='{% Url Directory, Index, checkedin: 'false' %}'">
+            <span style="vertical-align: sub;">{% T View members in the space right now %}</span>
+          </label>
           {% endif %}
-          {% for tag in data.Local.AllTags %}
-          <a href="{% Url Directory, Index, tag: tag %}" class="btn btn-{% if data.Local.Tag == tag  %}orange{% else %}grey{%endif%}"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {{ tag }}</a>
-          {% endfor %}
         </div>
         <!-- END FILTER -->
         
         <div class="row">
-          {% for member in data.Local.Coworkers %}
+          {% DivRow member in data.Local.Coworkers cols:4 %}
           <!-- member -->
           <div class="member_block span3 text-center {% if member.CheckedIn %}checkedin{% endif %}">
             <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="user_avatar">
@@ -44,7 +53,12 @@
               <img class="img-circle" height="140" width="140" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ member.FullName | Capitalize }}" >
               {% endif %}
             </a>
-            <h4 class="subheader">{{ member.FullName | Capitalize }}</h4>
+            <h4 class="subheader">
+            {{ member.FullName  | Capitalize }}
+            </h4>
+            <h5 class="subheader">
+            {{ member.BusinessArea | Capitalize }}
+            </h5>
             {% if member.ProfileWebsite.size > 0 %}
               <a target="_blank" href="{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
             {% else %}
@@ -64,7 +78,7 @@
             {% endif %}
           </div>
           <!-- END member -->
-          {% endfor %}
+          {% endDivRow %}
         </div>
         
       </section>
@@ -74,4 +88,11 @@
   </div>
   <!-- END CONTAINER -->
 </div>
+{% endblock %}
+{% block script %}
+<script>
+    $(function(){
+        $('#tag').chosen();
+    });
+</script>
 {% endblock %}

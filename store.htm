@@ -15,10 +15,10 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th class="span8">Product</th>
-                <th class="span1">Price</th>
-                <th class="span1">Qty.</th>
-                <th class="span2" style="white-space: nowrap;">{% T Add To My Plan %}</th>
+                <th class="span8">{% T Product %}</th>
+                <th class="span1">{% T Price %}</th>
+                <th class="span1">{% T Qty. %}</th>
+                <th class="span2" style="white-space: nowrap;">{% T Add to my plan %}</th>
               </tr>
             </thead>
             <tbody data-bind="foreach: products">
@@ -41,17 +41,21 @@
             <tbody>
               <tr>
                 <th class="span9"><p class="text-right">{% T One-off Payment: %}</p></th>
-                <th class="span3"><span data-bind="text: totalOneOff"></span></th>
+                <th class="span3">
+                  {{ data.Business.Currency.Code }}
+                  <span data-bind="text: totalOneOff"></span></th>
               </tr>
               <tr>
                 <th class="span9 text-right"><p class="text-right">{% T Added to your price plan: %}</p></th>
-                <th class="span3"> <span data-bind="text: totalTariff"></span></th>
+                <th class="span3"> 
+                  {{ data.Business.Currency.Code }}
+                  <span data-bind="text: totalTariff"></span></th>
               </tr>
             </tbody>
             
           </table>
           <div class="pull-right">
-            <button class="btn btn-orange" data-bind="attr: { disabled: selectedProducts().length == 0 }, click: confirmPurchase">{% T Continue %}</button>
+            <button class="btn btn-orange" data-bind="click: function () { selectedProducts().length == 0 ? doPurchase() : confirmPurchase() }">{% T Continue %}</button>
           </div>
         </div>
         
@@ -69,8 +73,8 @@
             <table class="table table-striped">
             <thead>
               <tr>
-                <th class="span10">Product</th>
-                <th class="span2">Price</th>
+                <th class="span10">{% T Product %}</th>
+                <th class="span2">{% T Price %}</th>
               </tr>
             </thead>
             <tbody data-bind="foreach: selectedProducts">
@@ -87,11 +91,15 @@
               <tbody>
                 <tr>
                   <th class="span10"><p class="text-right">{% T One-off Payment: %}</p></th>
-                  <th class="span2"><span data-bind="text: totalOneOff"></span></th>
+                  <th class="span2">
+                    {{ data.Business.Currency.Code }}
+                    <span data-bind="text: totalOneOff"></span></th>
                 </tr>
                 <tr>
                   <th class="span10 text-right"><p class="text-right">{% T Added to your price plan: %}</p></th>
-                  <th class="span2"> <span data-bind="text: totalTariff"></span></th>
+                  <th class="span2"> 
+                    {{ data.Business.Currency.Code }}
+                    <span data-bind="text: totalTariff"></span></th>
                 </tr>
               </tbody>
               
@@ -110,7 +118,10 @@
 </div>
 {% endblock %}
 {% block script %}
-<script type="text/javascript" src="/content/themes/public/default/js/knockout-2.3.0.js"></script>
-<script type="text/javascript" src="/content/themes/public/default/js/knockout.mapping-latest.js"></script>
+<script>
+    var lang = '{{ data.Language }}';
+    var onlyTimePasses = '{{ data.Local.OnlyTimePasses }}';
+    var productId = '{{ data.Local.ProductId }}';
+</script>
 <script type="text/javascript" src="/content/themes/public/default/js/store.js"></script>
 {% endblock %}
