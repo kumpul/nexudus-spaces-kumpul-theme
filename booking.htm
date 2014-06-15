@@ -118,6 +118,7 @@
 
         $('#Booking_From').datetimepicker('setDate', date);
         $('#Booking_To').datetimepicker('setDate', date);
+        $('#Booking_Resource').val($('#resource-filter').val());
 
         $('#delete-button').hide();
         setTimeout(checkBooking, 1000);
