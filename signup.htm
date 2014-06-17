@@ -161,13 +161,6 @@
 <script>
     $(function () {
         $(".date").datetimepicker({ language: '{{ data.Language }}', format: "dd MM yyyy", minuteStep: 15, showMeridian: true, autoclose: true, minView: 2, startView: 4 });
-    });
-</script>
-{% endblock %}
-{% block script %}
-<script>
-    $(function () {
-        $(".date").datetimepicker({ language: '{{ data.Language }}', format: "dd MM yyyy", minuteStep: 15, showMeridian: true, autoclose: true, minView: 2, startView: 4 });
 
         for (var i = 1; i <= 30; i++)
             $('input[name="Coworker.Custom' + i + '"]').parent().closest('.span12').appendTo('#ph-custom' + i);
