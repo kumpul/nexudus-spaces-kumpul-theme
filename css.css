@@ -239,6 +239,8 @@ a .icon{
 	margin-right: 5px
 }
 
+abbr { border: none !important; }
+
 /* -----------------------------------------
 	forms
 ----------------------------------------- */
@@ -269,6 +271,8 @@ input[type="color"]:focus,
 	-moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(248, 171, 3,.6);
 	box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(248, 171, 3,.6);
 }
+
+.form-search .input-append .btn { border: 1px solid rgb(204, 204, 204); }
 
 textarea{
 	min-height: 70px !important;
@@ -799,7 +803,7 @@ footer{
 }
 
 .body-content {
-    
+    min-height: 160px;
 }
 .body-content > .thumbnail.pull-left{
 	margin: 0 20px 20px 0;
@@ -927,68 +931,41 @@ footer{
 	content: "\e1d0" !important;
 }
 
-/* Collboration */
 
-  label.error {
-    color: red;
-    font-size:10px;
+/* Community */
+
+.threads .page-title h3 { margin-bottom: 0px; }
+.threads abbr { font-size: 13px; border: none; }
+.threads hr { margin: 5px 0 10px 0; }
+.threads .breadcrumb .btn { margin-top: -3px; margin-right: -8px; }
+.threads .pagination { margin: 0; }
+.threads .author-rail img { border: 3px solid #FBA927; }
+.muted-thread * { color: lightgray; }
+.muted-thread img { 
+	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(100%); /* Chrome 19+, Safari 6+, Safari 6+ iOS */
+}
+.message-link { color: black; }
+.btn-danger.btn-link { color: #da4f49 }
+.message-avatars img { margin-bottom: 2px; }
+.message-thread h4 { margin-bottom: 3px; }
+.message-stats {  margin-bottom: 5px; }
+.message-author {  margin-bottom: 5px; }
+.message-body { margin-bottom: 5px }
+.post-commands { margin-top: 5px; }
+.mentions-input-box textarea { width: 100%; margin-bottom: 3px; }
+.message-actions .btn { padding: 0; }
+
+/* Directory Search */
+
+.coworkers-table td { line-height: 35px; white-space: nowrap; }
+.typeahead * { text-align: left;  }
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+
+.threads-footer > div {
+  text-align: center !important;
   }
-  
-  .workspace-card {
-    width: 184px;
-    height: 235px;
-    float: left;
-    margin: 0 20px 20px 0;
-    position: relative;
-    text-align: left;
-    background: #fff;
-    padding: 15px;
-    text-rendering: optimizeLegibility;
-    -webkit-box-shadow: 0 0 6px rgba(0,0,0,0.3);
-    -moz-box-shadow: 0 0 6px rgba(0,0,0,0.3);
-    box-shadow: 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-  }
-  .workspace-card a.workspace-link {
-    height: 235px;
-    display: block;
-    text-decoration: none;
-    color: #858585;
-  }
-  .workspace-card h5 {
-    font-size: 18px;
-    margin: 0 0 5px;
-    line-height: 1.1em;
-    word-wrap: break-word;
-  }
-  .workspace-card .summary {
-    font-size: 13px;
-    line-height: 1.2em;
-    word-wrap: break-word;
-  }
-  .workspace-card .members {
-    position: absolute;
-    left: 16px;
-    bottom: 15px;
-    zoom: 1;
-  }
-  .workspace-card .members img {
-    border: 1px solid rgba(0,0,0,0.3);
-    margin: 0 2px 2px 0 !important;
-  }
-  .workspace-card .members label {
-    font-size: 12px;
-  }
-  .workspace-card input{ 
-  	margin: 0
-  }
-  .workspace-card .icon-remove {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-  }
-  
-.timepicker-picker > table > tbody > tr:first-child { display: none !important; }
-.timepicker-picker > table > tbody > tr:last-child { display: none !important; }
+}

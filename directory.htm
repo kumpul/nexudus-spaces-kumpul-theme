@@ -5,6 +5,7 @@
   .checkedin img { border-color: green !important; }
 </style>
 {% endif %}
+
 <div id="wrapper">
   <!-- CONTAINER -->
   <div id="main" class="container">
@@ -15,35 +16,33 @@
     </ul>
     <!-- END BREADCRUMB -->
     <div class="row">
-      <h2 class="page-title span12">{% T People at {0} || data.Business.Name %}</h2>
-      
       <!-- CONTENT -->
       <section id="content" class="span12">
         <!-- FILTER -->
-        <div class="filter well well-large">
-          <select style="width:100%" id="tag" onchange="window.location='{% Url Directory, Index, checkedin: data.Local.CheckedIn %}&tag=' + $('#tag').val()">
-            <option value=""> {% T View all %}</option>
-            {% for tag in data.Local.AllTags %}
-            <option value="{{tag}}" {% if data.Local.Tag == tag  %}selected="selected"{%endif%}> {{ tag | Capitalize }}</option>
-            {% endfor %}  
-          </select>
-          {% if data.Local.ShowCheckInMembers and data.Local.CheckedIn == false %}
-          <label>
-            <input type="checkbox" onclick="window.location='{% Url Directory, Index, checkedin: 'true' %}'">
-            <span style="vertical-align: sub;">{% T View members in the space right now %}</span>
-          </label>
-          {% endif %}
-          {% if data.Local.ShowCheckInMembers and data.Local.CheckedIn == true %}
-          <label>
-            <input type="checkbox" checked="checked" onclick="window.location='{% Url Directory, Index, checkedin: 'false' %}'">
-            <span style="vertical-align: sub;">{% T View members in the space right now %}</span>
-          </label>
-          {% endif %}
+        <div class="filter text-center">
+          <form class="form-search" method="GET" action="{% Url Directory, Search %}">
+            {% if data.Local.Query.size > 0 %}
+            <a class="btn btn-link btn-small" href="{% Url Directory, Index %}">{% T Show all %}</a>
+            {% endif %}
+            <div class="input-append">
+              <input id="coworkers-search" value="{{ data.Local.Query }}" type="text" name="query" class="input-large search-query" autocomplete="off" placeholder="{% T Search... %}">
+              <button type="submit" class="btn">
+                <i class="icon-search"></i>
+              </button>
+            </div>
+          </form>
         </div>
         <!-- END FILTER -->
-        
+        {% if data.Local.Coworkers.size == 0 %}
+        <div class="well well-large text-center">
+          <h2>{% T No one has published a profile yet... :( %}</h2>
+          <div class="media comment comment-form">
+            <a class="btn btn-orange btn-large" href="{% Url Profile, Index %}">{% T Publish your profile %}</a>
+          </div>
+        </div>
+        {% endif %}
         <div class="row">
-          {% DivRow member in data.Local.Coworkers cols:4 %}
+          {% for member in data.Local.Coworkers %}
           <!-- member -->
           <div class="member_block span3 text-center {% if member.CheckedIn %}checkedin{% endif %}">
             <a href="{% Url Directory, Profile, Id: member.Id, name: member.FullName | Clean %}" class="user_avatar">
@@ -53,12 +52,12 @@
               <img class="img-circle" height="140" width="140" src="/content/themes/public/clean/images/comment-avatar.jpg" alt="{{ member.FullName | Capitalize }}" >
               {% endif %}
             </a>
-            <h4 class="subheader">
-            {{ member.FullName  | Capitalize }}
-            </h4>
-            <h5 class="subheader">
-            {{ member.BusinessArea | Capitalize }}
-            </h5>
+            {% if member.CheckedIn %}
+            <br/>
+            <span class="label label-success">{% T checked in %}</span>
+            {% endif %}
+            <h4 class="subheader">{{ member.FullName | Capitalize }}</h4>
+            
             {% if member.ProfileWebsite.size > 0 %}
               <a target="_blank" href="{{ member.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
             {% else %}
@@ -78,7 +77,7 @@
             {% endif %}
           </div>
           <!-- END member -->
-          {% endDivRow %}
+          {% endfor %}
         </div>
         
       </section>
@@ -92,7 +91,19 @@
 {% block script %}
 <script>
     $(function(){
-        $('#tag').chosen();
+        var data = [
+          {% for tag in data.Local.AllTags %}
+          '#{{ tag | Replace: "'","\'" }}',
+          {% endfor %}
+          {% for coworker in data.Local.Coworkers %}
+          '{{ coworker.FullName | Replace: "'","\'" }}',
+          {% endfor %}
+          ''
+          ];
+        $("#coworkers-search").typeahead({
+            source: data,
+            limit: 15
+        });
     });
 </script>
 {% endblock %}

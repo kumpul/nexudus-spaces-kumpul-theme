@@ -102,23 +102,19 @@
           </div>
         </div>
         <!-- END WIDGET SKILLS -->
+        {% if data.Setting_Social_Flickr != "" %}
         <!-- WIDGET FLICKR -->
         <div class="widget widget-flickr">
           <div class="widget-title">
-            <h3>{% T Twitter feed %}</h3>
+            <h3>{% T Flickr Feed %}</h3>
           </div>
           <div class="widget-body">
-            {% if data.Setting_Social_Twitter != "" %}
-            <a class="twitter-timeline" data-tweet-limit="5" data-chrome="noheader nofooter noborders" href="https://twitter.com/twitterapi" data-widget-id="{% Setting Social.Twitter %}"></a>
-            {% else %}
-            <div class="well no-content text-center">
-              <span aria-hidden="true" class="icon i-48 icon-twitter-2"></span>
-              <p><strong><a target="_blank" href="https://spaces.nexudus.com/Settings">{% T Click here to setup Twitter %}</a></strong></p>
-            </div>
-            {% endif %}
+            <ul>
+            </ul>
           </div>
         </div>
         <!-- END WIDGET FLICKR -->
+        {% endif %}
       </aside>
       <!-- END SIDEBAR -->
     </div>

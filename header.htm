@@ -5,7 +5,7 @@
       
       <!-- LOGO OR SPACE NAME -->
       {% if data.Business.HasLogo %}
-      <h1 class="pull-left"><a href="/"><img src="{% Url Business, GetLogo, h:80 %}" alt="logo"></a></h1>
+      <h1 class="pull-left"><a href="/"><img src="{% Url Business, GetLogo, h:60 %}" alt="logo"></a></h1>
       {% else %}
       <h1 style="margin-top:40px; margin-bottom:30px" class="pull-left">{{ data.Business.Name }}</h1>
       {% endif %}
@@ -31,6 +31,9 @@
               <li class="{%if data.Controller == 'events'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Events, Index %}">{% T Events %}</a></li>
               <li class="{%if data.Controller == 'bookings'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Bookings, Index %}">{% T Bookings %}</a></li>
               <li class="{%if data.Controller == 'directory'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Directory, Index %}">{% T Directory %}</a></li>
+              {% if data.Setting_PublicWebSite_CommunityBoard %}
+              <li class="{%if data.Controller == 'conversations'%}active{%endif%}"><a role="menuitem" tabindex="-1" href="{% Url Conversations, Index %}">{% T Community Board %}</a></li>
+              {% endif %}
               {% if data.Resources.size > 0 %}  
               <li class="divider"></li>  
               <li class=""><a role="menuitem" tabindex="-1" href="{% Url PublicResources, Index %}">{% T Space resources %}</a></li>

@@ -83,7 +83,13 @@
         </table>
         
         
-        {% if data.Local.SpreedlyEnabled or data.Setting_AuthorizeNet_EnableSubscriptions %}
+        {% if data.Local.SpreedlyEnabled %}
+        <a class="btn btn-orange spreedlyButton pull-right" data-payButtonText="{% T Update Payment Details %}" data-payUrl="https://{{ data.Domain }}/{{ data.Language }}/payments/SpreedlyPaymentToken/0" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Update Payment Details %}</a>
+        <br/>
+        <br/>
+        {% endif %}
+        
+        {% if data.Setting_AuthorizeNet_EnableSubscriptions %}
         <a class="btn btn-orange ccPayButton pull-right" data-description="{% T Update Payment Details %}" data-payUrl="{% Url Invoices, StoreCard, provider: 'authorizeNetSubscription' %}" href="#"><span aria-hidden="true" class="icon i-16 icon-credit"></span> {% T Update Payment Details %}</a>
         <br/>
         <br/>
@@ -162,32 +168,50 @@
         <span class="invoiceNumber"></span>
       </div>
       <div class="modal-body">
-        
-        <div class="controls controls-row">
-          <label class="span8">{% T Card Number %}</label>
-          <label class="span4">{% T Expires %}</label>
-      </div>
-      <div class="controls controls-row">
-        <input type="hidden" name="configuration[0].key" value="CardNumber" />
-        <input type="hidden" name="configuration[1].key" value="CardExpMonth" />
-        <input type="hidden" name="configuration[2].key" value="CardExpYear" />
-        <input type="hidden" name="configuration[3].key" value="CardHolder" />
-        <input type="hidden" name="configuration[4].key" value="cvv2" />
-        
-        <input autocomplete="off" name="configuration[0].value" class="span8" type="text" placeholder="???? ???? ???? ????">
-        <input autocomplete="off" name="configuration[1].value" class="span2" type="text" placeholder="MM">
-        <input autocomplete="off" name="configuration[2].value" class="span2" type="text" placeholder="YY">
-      </div>
-      <div class="controls controls-row">
-        <label class="span8">{% T Name on Card %}</label>
-        <label class="span4">{% T CVC %}</label>
-      </div>
-      <div class="controls controls-row">
-        <input autocomplete="off" name="configuration[3].value" value="{{ data.Coworker.BillName }}" class="span8" type="text" placeholder="">
-        <input autocomplete="off" name="configuration[4].value" class="span4" type="text" placeholder="CVC">
-        
-      </div>
-      
+
+          <div class="controls controls-row">
+              <label class="span8">{% T Card Number %}</label>
+              <label class="span4">{% T Expires %}</label>
+          </div>
+          <div class="controls controls-row">
+              <input type="hidden" name="configuration[0].key" value="CardNumber" />
+              <input type="hidden" name="configuration[1].key" value="CardExpMonth" />
+              <input type="hidden" name="configuration[2].key" value="CardExpYear" />
+              <input type="hidden" name="configuration[3].key" value="CardHolder" />
+              <input type="hidden" name="configuration[4].key" value="cvv2" />
+
+              <input autocomplete="off" name="configuration[0].value" class="span8" type="text" placeholder="???? ???? ???? ????">
+              <input autocomplete="off" name="configuration[1].value" class="span2" type="text" placeholder="MM">
+              <input autocomplete="off" name="configuration[2].value" class="span2" type="text" placeholder="YY">
+          </div>
+          <div class="controls controls-row">
+              <label class="span8">{% T Name on Card %}</label>
+              <label class="span4">{% T CVC %}</label>
+          </div>
+          <div class="controls controls-row">
+              <input autocomplete="off" name="configuration[3].value" value="{{ data.Coworker.FullNameForInvoice }}" class="span8" type="text" placeholder="">
+              <input autocomplete="off" name="configuration[4].value" class="span4" type="text" placeholder="CVC">
+          </div>
+          <div class="controls controls-row">
+              <label class="span12">{% T Address %}</label>
+          </div>
+          <div class="controls controls-row">
+              <textarea autocomplete="off" name="Coworker.BillingAddress" class="span12">{{ data.Coworker.AddressForInvoice }}</textarea>
+          </div>
+          <div class="controls controls-row">
+              <label class="span12">{% T State %}</label>
+          </div>
+          <div class="controls controls-row">
+              <input autocomplete="off" name="Coworker.BillingState"  value="{{ data.Coworker.StateForInvoice }}" class="span12" type="text" placeholder="{% T State %}">
+          </div>
+          <div class="controls controls-row">
+              <label class="span5">{% T City %}</label>
+              <label class="span7">{% T Postcode / Zip code %}</label>
+          </div>
+          <div class="controls controls-row">
+              <input autocomplete="off" name="Coworker.BillingCityName" value="{{ data.Coworker.CityForInvoice }}" class="span5" type="text" placeholder="{% T City %}">
+              <input autocomplete="off" name="Coworker.BillingPostCode" value="{{ data.Coworker.PostCodeForInvoice }}" class="span7" type="text" placeholder="{% T Postcode / Zip code %}">
+          </div>
       </div>
       <div class="modal-footer">
         <a class="btn  btn-grey" data-dismiss="modal" aria-hidden="true">{% T Close %}</a>

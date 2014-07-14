@@ -1,4 +1,14 @@
 {% extends master.master %}
+{% block script %}
+<script src="/scripts/jquery.timeago.js"></script>
+<script src="/scripts/jquery.timeago.{{ data.Language }}.js"></script>
+<script>
+    $(function () {
+        $("abbr.timeago").timeago();
+    });
+</script>
+
+{% endblock %}
 {% block content %}
 <div id="wrapper">
   <!-- CONTAINER -->
@@ -7,45 +17,45 @@
     <ul class="breadcrumb">
       <li><a href="{% Url PublicHome, Index %}">{% T Home %}</a> <span class="divider">/</span></li>
       <li><a href="{% Url Directory, Index %}">{% T People at {0} || data.Business.Name %}</a> <span class="divider">/</span></li>
-      <li class="active">{% T People at {0} || data.Business.Name %}</li>
+      <li class="active"> {{ data.Local.Coworker.FullName | StripHtml }}
+      </li>
     </ul>
     <!-- END BREADCRUMB -->
     <div class="row">
       
       <h2 class="page-title span12">
-        {{ data.Local.Coworker.FullName }}
+        {{ data.Local.Coworker.FullName  | StripHtml }}
       	{% if data.Local.Coworker.NickName != null %}
-        [{{data.Local.Coworker.NickName}}]
+        [{{data.Local.Coworker.NickName  | StripHtml}}]
         {% endif %}
       </h2>
       
       <!-- CONTENT -->
       <section id="content" class="span9">
-        <div class="body-content">
+        <div class="body-content" style="margin-bottom: 25px">
           <div class="media">
             <div class="media-object pull-left">
-              <img class="img-circle"  src="{% Url Coworker, GetAvatar, Id: data.Local.Coworker.Id, h:140, w:140 %}" />
+              <img class="img-circle" style="max-width: 140px" src="{% Url Coworker, GetAvatar, Id: data.Local.Coworker.Id, h:140, w:140 %}" />
             </div>
             <div class="media-body">
-              <h3>{% T My profile %}</h3>
+              <h4>{% T My profile %}</h4>
               <p>
                 {% if data.Local.Coworker.ProfileSummary == null %}
                 {% T {0} hasn't published yet a profile summary. || data.Local.Coworker.FullName %}
                 {% endif %}
-                {{ data.Local.Coworker.ProfileSummary | StripHtml | MarkDown  }}
+                {{ data.Local.Coworker.ProfileSummary | StripHtml | NewlineToBr | MarkDown  }}
               </p>
               <div class="skills">
-                <h3>{% T My skills %}</h3>
                 {% if data.Local.Coworker.ProfileTagsList.size == 0 %}
                 {% T {0} hasn't published any skills yet. || data.Local.Coworker.FullName %}
                 {% endif %}
                 {% for tag in data.Local.Coworker.ProfileTagsList %}
-                <a href="{% Url Directory, Index, tag: tag %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {{ tag }}</a>
+                <a href="{% Url Directory, Search, query: tag %}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-tag"></span> {{ tag }}</a>
                 {% endfor %}
               </div>
               {% if data.Local.Coworker.HasContactDetails %}
-              <div class="skills">
-                <h3>{% T Contact details %}</h3>
+              <div style="margin-top: 10px">
+                <h4>{% T Contact details %}</h4>
                 {% if data.Local.Coworker.ProfileWebsite.size > 0 %}
                 <a target="_blank" href="{{ data.Local.Coworker.ProfileWebsite }}" class="btn btn-grey"><span aria-hidden="true" class="icon i-16 icon-earth"></span></a>
                 {% endif %}
@@ -66,13 +76,59 @@
             </div>
           </div>
         </div>
+        <br class="clearfix"/>
+        {% if data.Setting_PublicWebSite_CommunityBoard and data.Local.Threads.size > 0 %}
+        <div class="row">
+          <div class="span9">
+            <hr/>
+            <h4>{% T Recent conversations %}</h4>
+            <table class="table table-condensed">
+              <tbody>
+                {% for thread in data.Local.Threads %}
+                <tr>
+                  <td>
+                    <a href="{% Url Conversations, Thread, id: thread.Id, name: thread.Subject | Clean %}">
+                      {{ thread.Subject }}
+                    </a>
+                  </td>
+                  <td >
+                    <div class="text-right">
+                      {% for pid in thread.Participants | limit: 10 %}
+                      <a href="{% Url Directory, Profile, id: pid %}"><img class="img-circle" height="20" width="20" src="{% Url Coworker, GetAvatar, id: pid, h:20, w:20 %}" title="{{ thread.FullNames[forloop.index0] }}" alt="{{ thread.FullNames[forloop.index0] }}"></a>
+                      {% endfor %}
+                    </div>
+                  </td>
+                  <td style="width: 150px" class="hidden-phone">
+                    <abbr class="timeago" title="{{ thread.CreatedOn | FormatDate: 'yyyy-MM-ddTHH:mm:ssZ' }}">{{ thread.FullName }}</abbr>
+                  </td>
+                  <td style="width: 150px"  class="hidden-phone hidden-tablet">
+                    <div class="text-right">
+                      <span class="label">
+                        {{ thread.MessageCount }} {% T replies %}
+                      </span>
+                      <span class="label">
+                        {{ thread.LikeCount }} {% T likes %}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="text-center">
+            	<a class="btn btn-orange" href="{% Url Conversations, Index %}">{% T Community Board %}</a>
+            </div>
+          </div>
+        </div>
+        {% endif %}
       </section>
       <!-- END CONTENT -->
       
       <!-- SIDEBAR -->
       <aside id="sidebar-right" class="span3">
         
-        <!-- WIDGET SKILLS -->
+         {% if data.Local.AllTags.size > 0 %}
+         <!-- WIDGET SKILLS -->
         <div class="widget widget-skills">
           <div class="widget-title">
             <h3>{% T Skills at {0} || data.Business.Name %}</h3>
@@ -84,6 +140,8 @@
           </div>
         </div>
         <!-- END WIDGET SKILLS -->
+        {% endif %}
+        {% if data.Setting_Social_Flickr != "" %}
         <!-- WIDGET FLICKR -->
         <div class="widget widget-flickr">
           <div class="widget-title">
@@ -95,7 +153,7 @@
           </div>
         </div>
         <!-- END WIDGET FLICKR -->
-        
+        {% endif %}
       </aside>
       <!-- END SIDEBAR -->
       

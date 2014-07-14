@@ -29,7 +29,8 @@
             <p>
               <img src="{% Url Events, GetLargeImage, id: data.Local.Event.Id, w: 870 %}" alt="{{ data.Local.Event.Name | StripHtml }}" />
             </p>
-            {% elseif data.Local.Event.HasSmallImage %}
+            {% endif %}
+            {% if data.Local.Event.HasSmallImage %}
             <a href="#" class="thumbnail pull-left">
               <img src="{% Url Events, GetSmallImage, id: data.Local.Event.Id, w: 200 %}">
             </a>
@@ -98,8 +99,7 @@
           </a>
           <div class="media-body">
             <form class="row-fluid" method="post" action="{% Url Events, NewComment %}">
-                {% AntiforgeryToken %}
-              <input type="hidden" id="id" name="id" required="required" value="{{ data.Local.Event.Id }}"> 
+              {% AntiforgeryToken %}
           	  <input type="hidden" id="title" name="title" required="required" value="{{ data.Local.Event.Name }}"> 
               <label for="message_messagetext">{% T Comment %}</label>
               <textarea type="text" class="span12" maxlength="2000" name="comment" id="comment" required="required">{{data.Local.Comment.Text}}</textarea>
@@ -120,6 +120,7 @@
       
       <!-- SIDEBAR -->
       <aside id="sidebar-right" class="span3">
+        {% if data.Setting_Social_Flickr != "" %}
         <!-- WIDGET FLICKR -->
         <div class="widget widget-flickr">
           <div class="widget-title">
@@ -131,6 +132,7 @@
           </div>
         </div>
         <!-- END WIDGET FLICKR -->
+        {% endif %}
       </aside>
       <!-- END SIDEBAR -->
       

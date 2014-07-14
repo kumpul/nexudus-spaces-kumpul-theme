@@ -15,7 +15,7 @@
       <section id="content" class="span9">
         {% if data.Local.CalendarEvents.size == 0 %}
         <h3 class="well">{% T There are no more events. %}</h3>
-        <a class="btn btn-orange" href="{% Url Events, Index, page: data.Local.Page | Minus: 1 %}">{% T Go back %}</a>
+        <a class="btn btn-orange" href="{% Url Blog, Index, page: data.Local.Page | Minus: 1 %}">{% T Go back %}</a>
         {% endif %}
         {% for ev in data.Local.CalendarEvents %}
         <article class="post">
@@ -23,7 +23,7 @@
           <!-- POST INFO -->
           <ul class="post-info">
             <li>
-              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="{% Url Events, ICal, Id: ev.Id %}">{{ ev.StartDate | Date: 'd MMMM @ h:mm tt' }}</a>
+              <span aria-hidden="true" class="icon i-16 icon-calendar"></span> <a href="{% Url Events, ICal, Id: ev.Id %}">{{ ev.StartDate | Date: 'd MMMM' }}</a>
             </li>
             <li>
               <span aria-hidden="true" class="icon i-16 icon-bubble"></span> <a href="{% Url Events, View, Id: ev.Id, title: ev.Name | Clean %}#comments">{% T {0} Comment(s) || ev.Comments.size %}</a>
@@ -46,7 +46,9 @@
                 {{ ev.ShortDescription | StripHtml | MarkDown }}
                 <p>
                   <a class="btn btn-orange" href="{% Url Events, View, Id: ev.Id, title: ev.Name | Clean %}">{% T Read more %}</a>
-                  <a class="btn btn-grey" href="{% Url Events, ICal, Id: ev.Id, title: ev.Name | Clean %}">{% T Add to Calendar %}</a>
+                  <a class="btn btn-grey" href="{% Url Events, ICal, Id: ev.Id, title: ev.Name | Clean %}">
+                    <i class="icon-calendar"></i> 
+                    {% T Add to Calendar %}</a>
                 </p>    
               </div>
             </div>                   
@@ -81,23 +83,19 @@
       
       <!-- SIDEBAR -->
       <aside id="sidebar-right" class="span3">
+        {% if data.Setting_Social_Flickr != "" %}
         <!-- WIDGET FLICKR -->
         <div class="widget widget-flickr">
           <div class="widget-title">
-            <h3>{% T Twitter feed %}</h3>
+            <h3>{% T Flickr Feed %}</h3>
           </div>
           <div class="widget-body">
-            {% if data.Setting_Social_Twitter != "" %}
-            <a class="twitter-timeline" data-tweet-limit="5" data-chrome="noheader nofooter noborders" href="https://twitter.com/twitterapi" data-widget-id="{% Setting Social.Twitter %}"></a>
-            {% else %}
-            <div class="well no-content text-center">
-              <span aria-hidden="true" class="icon i-48 icon-twitter-2"></span>
-              <p><strong><a target="_blank" href="https://spaces.nexudus.com/Settings">{% T Click here to setup Twitter %}</a></strong></p>
-            </div>
-            {% endif %}
+            <ul>
+            </ul>
           </div>
         </div>
         <!-- END WIDGET FLICKR -->
+        {% endif %}
       </aside>
       <!-- END SIDEBAR -->
     </div>
